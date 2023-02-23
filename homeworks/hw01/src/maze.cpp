@@ -31,3 +31,38 @@ bool Maze::validityCheck() const {
 
     return true;
 }
+
+size_t Maze::getIndex(const MazeCoordinates & location) const {
+    return location.getIndex(rowLength);
+}
+
+std::list<MazeCoordinates> Maze::neighbours(const MazeCoordinates & location) const {
+    std::list<MazeCoordinates> result;
+
+    MazeCoordinates coordinate(location);
+
+    coordinate.x += 1;
+    if (coordinate.validityCheck(rowLength, columnLength) && maze[getIndex(coordinate)] == ' ') {
+        result.push_back(coordinate);
+    }
+
+    coordinate = location;
+    coordinate.x -= 1;
+    if (coordinate.validityCheck(rowLength, columnLength) && maze[getIndex(coordinate)] == ' ') {
+        result.push_back(coordinate);
+    }
+
+    coordinate = location;
+    coordinate.y += 1;
+    if (coordinate.validityCheck(rowLength, columnLength) && maze[getIndex(coordinate)] == ' ') {
+        result.push_back(coordinate);
+    }
+
+    coordinate = location;
+    coordinate.y -= 1;
+    if (coordinate.validityCheck(rowLength, columnLength) && maze[getIndex(coordinate)] == ' ') {
+        result.push_back(coordinate);
+    }
+
+    return result;
+}

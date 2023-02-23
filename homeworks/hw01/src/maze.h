@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <exception>
+#include <list>
 
 class MazeException: public std::exception {
 protected:
@@ -16,11 +17,10 @@ public:
 };
 
 
-class MazeCoordinates {
+struct MazeCoordinates {
     unsigned long x;
     unsigned long y;
 
-public:
     MazeCoordinates(unsigned long xCoord, unsigned long yCoord): x(xCoord), y(yCoord) { }
 
     size_t getIndex(size_t rowLenght) const;
@@ -41,6 +41,10 @@ struct Maze {
     void pushChar(char c);
 
     bool validityCheck() const;
+
+    size_t getIndex(const MazeCoordinates & location) const;
+
+    std::list<MazeCoordinates> neighbours(const MazeCoordinates & location) const;
 };
 
 #endif /* MAZE_H */
