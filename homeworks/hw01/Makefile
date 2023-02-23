@@ -12,17 +12,17 @@ TARGET := $(BIN_DIR)/$(PROJECT)
 SOURCES := $(wildcard ${SRC_DIR}/*.cpp)
 OBJECTS := $(patsubst ${SRC_DIR}/%.cpp, ${OBJ_DIR}/%.o, ${SOURCES})
 
-.PHONY default run clean
+.PHONY: default run clean
 
 default: ${TARGET}
 
 ${TARGET}: ${OBJECTS}
 	@mkdir -p $(dir $@)
-	@${CXX} ${FLAGS} -o $@ $(OBJ)
+	${CXX} ${FLAGS} $^ -o $@
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	@mkdir -p $(dir $@)
-	$(CCX) $(FLAGS) -o $@ $<
+	${CXX} ${FLAGS} -c $< -o $@
 
 run: ${TARGET}
 	./bin/${NAME}
