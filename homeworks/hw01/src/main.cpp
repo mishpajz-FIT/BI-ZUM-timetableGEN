@@ -1,8 +1,32 @@
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <string>
 
-std::vector<std::string> readFile(const std::string & fileName) {
+class MazeBuilderException: public std::exception {
+    const std::string message;
+
+public:
+    MazeBuilderException(const std::string & reason): message(reason) { }
+
+    const char * what() const noexcept override {
+        return message.c_str();
+    }
+};
+
+std::vector<std::string> readMaze(const std::string & filePath) {
+
+    std::fstream file;
+    file.open(filePath);
+
+    if (!file.is_open()) {
+        throw MazeBuilderException("File could not be opened!");
+    }
+
+    std::cout << "Reading from file: " << filePath << std::endl;
+
+
+
     return { "a" };
 }
 
@@ -15,10 +39,10 @@ int main(int argc, char * argv []) {
     }
 
     try {
-        readFile(argv[1]);
+        readMaze(argv[1]);
     }
-    catch (...) {
-        std::cout << "Error" << std::endl;
+    catch (const std::exception & e) {
+        std::cout << "(!) " << e.what() << std::endl;
     }
 
     return 0;
