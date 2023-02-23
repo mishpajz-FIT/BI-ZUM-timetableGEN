@@ -1,6 +1,6 @@
 PROJECT := hw01_dobesmic
 
-CXX := g++-12
+CXX := g++
 FLAGS := -std=c++17 -O2 -Wall -pedantic
 
 BIN_DIR := bin
