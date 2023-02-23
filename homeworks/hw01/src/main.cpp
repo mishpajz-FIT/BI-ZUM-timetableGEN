@@ -2,6 +2,7 @@
 #include <exception>
 
 #include "mazebuilder.h"
+#include "solver.h"
 
 int main(int argc, char * argv []) {
 
@@ -11,7 +12,8 @@ int main(int argc, char * argv []) {
     }
 
     try {
-        readMaze(argv[1]);
+        DFSSolver dfs(readMaze(argv[1]));
+        dfs.solve(true);
     }
     catch (const std::exception & e) {
         std::cout << "(!) " << e.what() << std::endl;
