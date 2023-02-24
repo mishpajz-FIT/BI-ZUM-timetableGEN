@@ -11,13 +11,6 @@
 #include <queue>
 
 struct Solver {
-
-protected:
-    unsigned long solveProgress;
-    unsigned long nodesOpened;
-
-public:
-
     struct Node {
         enum State {
             undiscovered,
@@ -34,14 +27,23 @@ public:
     Maze maze;
     std::vector<Solver::Node> nodes;
 
-    Solver(Maze m): solveProgress(0), nodesOpened(0), maze(m), nodes() { }
+protected:
+    unsigned long solveProgress;
+    unsigned long nodesOpened;
+
+public:
+
+    Solver(Maze m): maze(m), nodes(), solveProgress(0), nodesOpened(0) { }
 
     virtual ~Solver() { }
 
     virtual void solve(bool verbose = false);
 
 protected:
+
     void printProgress();
+
+    void printResult() const;
 
     virtual void printProgressInfo() const;
 
@@ -51,16 +53,18 @@ private:
     void printMazeInfo() const;
 
     void printNode(size_t index) const;
-
 };
 
 struct DFSSolver: public Solver {
 
-    DFSSolver(Maze m): Solver(m) { }
+    DFSSolver(Maze m): Solver(m), solutionFound(false) { }
 
     void solve(bool verbose = false) override;
 
 private:
+
+    bool solutionFound;
+
     void recProcedure(MazeCoordinates v, bool verbose);
 
 protected:

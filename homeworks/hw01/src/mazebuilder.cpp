@@ -52,7 +52,7 @@ Maze readMaze(const std::string & filePath) {
         loadedMaze.columnLength++;
     }
 
-    if (loadedMaze.maze.size() == 0) {
+    if (loadedMaze.data.size() == 0) {
         throw MazeBuilderException("Inconsistent line length in file.");
     }
 

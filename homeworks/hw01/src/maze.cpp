@@ -17,15 +17,15 @@ void Maze::pushChar(char c) {
         throw MazeException("Unknown character.");
     }
 
-    maze.push_back(c);
+    data.push_back(c);
 }
 
 bool Maze::validityCheck() const {
-    if (rowLength * columnLength != maze.size()) {
+    if (rowLength * columnLength != data.size()) {
         throw MazeException("Incorrect maze dimensions.");
     }
 
-    if (maze[getIndex(start)] != ' ' || maze[getIndex(end)] != ' ') {
+    if (data[getIndex(start)] != ' ' || data[getIndex(end)] != ' ') {
         throw MazeException("Start or end position at impossible location in maze. (Probably inside wall)");
     }
 
@@ -46,25 +46,25 @@ std::list<MazeCoordinates> Maze::neighbours(const MazeCoordinates & location) co
     MazeCoordinates coordinate(location);
 
     coordinate.x += 1;
-    if (coordinate.validityCheck(rowLength, columnLength) && maze[getIndex(coordinate)] == ' ') {
+    if (coordinate.validityCheck(rowLength, columnLength) && data[getIndex(coordinate)] == ' ') {
         result.push_back(coordinate);
     }
 
     coordinate = location;
     coordinate.x -= 1;
-    if (coordinate.validityCheck(rowLength, columnLength) && maze[getIndex(coordinate)] == ' ') {
+    if (coordinate.validityCheck(rowLength, columnLength) && data[getIndex(coordinate)] == ' ') {
         result.push_back(coordinate);
     }
 
     coordinate = location;
     coordinate.y += 1;
-    if (coordinate.validityCheck(rowLength, columnLength) && maze[getIndex(coordinate)] == ' ') {
+    if (coordinate.validityCheck(rowLength, columnLength) && data[getIndex(coordinate)] == ' ') {
         result.push_back(coordinate);
     }
 
     coordinate = location;
     coordinate.y -= 1;
-    if (coordinate.validityCheck(rowLength, columnLength) && maze[getIndex(coordinate)] == ' ') {
+    if (coordinate.validityCheck(rowLength, columnLength) && data[getIndex(coordinate)] == ' ') {
         result.push_back(coordinate);
     }
 

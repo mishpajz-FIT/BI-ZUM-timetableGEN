@@ -31,14 +31,14 @@ struct MazeCoordinates {
 };
 
 struct Maze {
-    std::vector<char> maze;
+    std::vector<char> data;
     MazeCoordinates start;
     MazeCoordinates end;
 
     size_t rowLength;
     size_t columnLength;
 
-    Maze(): maze(), start(-1, -1), end(-1, -1), rowLength(0), columnLength(0) { }
+    Maze(): data(), start(-1, -1), end(-1, -1), rowLength(0), columnLength(0) { }
 
     void pushChar(char c);
 

@@ -1,7 +1,7 @@
 #include "solver.h"
 
 void Solver::solve(bool verbose) {
-    nodes = std::vector<Solver::Node>(maze.maze.size());
+    nodes = std::vector<Solver::Node>(maze.data.size());
     solveProgress = 0;
     nodesOpened = 0;
 }
@@ -27,6 +27,7 @@ void Solver::printProgress() {
         std::cout << std::endl;
     }
 
+    printSeparator();
     std::cout << "_step_number_(" << solveProgress++ << ")_" << std::endl;
     printProgressInfo();
     printMazeInfo();
@@ -62,10 +63,63 @@ void Solver::printNode(size_t index) const {
             std::cout << '*';
             break;
         default:
-            if (maze.maze[index] == 'X') {
+            if (maze.data[index] == 'X') {
                 std::cout << '#';
             } else {
-                std::cout << maze.maze[index];
+                std::cout << maze.data[index];
             }
     }
+}
+
+void Solver::printResult() const {
+
+    std::cout << "\033[1;1H\033[2J" << std::endl;
+
+    Maze mazeCopy(maze);
+
+    size_t endIndex = maze.getIndex(maze.end);
+
+    if (nodes[endIndex].state == Solver::Node::State::undiscovered) {
+        printSeparator();
+        std::cout << "No path has been found." << std::endl;
+        std::cout << "_path_lenght_(" << (char)(236) << ")_" << std::endl;
+        std::cout << "_nodes_opened_(" << nodesOpened << ")_" << std::endl;
+        printSeparator();
+        return;
+    }
+
+    size_t pathLength = 1;
+    MazeCoordinates nextCoords = nodes[endIndex].previousNodeInPath;
+    size_t nextCoordsIndex = maze.getIndex(nextCoords);
+    while (nextCoords != maze.start) {
+        mazeCopy.data[nextCoordsIndex] = 'x';
+        nextCoords = nodes[nextCoordsIndex].previousNodeInPath;
+        nextCoordsIndex = maze.getIndex(nextCoords);
+        pathLength++;
+    }
+
+    mazeCopy.data[maze.getIndex(maze.start)] = 'S';
+    mazeCopy.data[maze.getIndex(maze.end)] = 'E';
+
+    size_t i = 0;
+    for (size_t row = 0; row < maze.columnLength; row++) {
+        for (size_t column = 0; column < maze.rowLength; column++) {
+
+            if (mazeCopy.data[i] == 'X') {
+                std::cout << '#';
+            } else {
+                std::cout << mazeCopy.data[i];
+            }
+
+            i++;
+        }
+        std::cout << std::endl;
+    }
+
+    printSeparator();
+    std::cout << "_path_lenght_(" << pathLength << ")_" << std::endl;
+    std::cout << "_nodes_opened_(" << nodesOpened << ")_" << std::endl;
+    std::cout << "  x  = final path" << std::endl;
+    printMazeInfo();
+    printSeparator();
 }

@@ -13,6 +13,7 @@ void BFSSolver::solve(bool verbose) {
         nodes[maze.getIndex(top)].state = Solver::Node::State::closed;
 
         if (top == maze.end) {
+            printResult();
             return;
         }
 
@@ -30,4 +31,6 @@ void BFSSolver::solve(bool verbose) {
             printProgress();
         }
     }
+
+    printResult();
 }
