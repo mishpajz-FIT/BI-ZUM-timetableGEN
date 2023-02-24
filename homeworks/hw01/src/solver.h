@@ -33,7 +33,7 @@ protected:
 
 public:
 
-    Solver(Maze m): maze(m), nodes(), solveProgress(0), nodesOpened(0) { }
+    Solver(const Maze & m): maze(m), nodes(), solveProgress(0), nodesOpened(0) { }
 
     virtual ~Solver() { }
 
