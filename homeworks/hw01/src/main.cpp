@@ -2,7 +2,7 @@
 #include <exception>
 #include <cstdio>
 
-#include "mazebuilder.h"
+#include "utility/mazebuilder.h"
 #include "solver.h"
 
 class InputException: public std::exception {

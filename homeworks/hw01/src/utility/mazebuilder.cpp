@@ -1,4 +1,4 @@
-#include "mazebuilder.h"
+#include "utility/mazebuilder.h"
 
 Maze readMaze(const std::string & filePath) {
     std::fstream file;

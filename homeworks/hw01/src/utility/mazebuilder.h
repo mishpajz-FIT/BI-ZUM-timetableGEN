@@ -1,7 +1,7 @@
 #ifndef MAZEBUILDER_H
 #define MAZEBUILDER_H
 
-#include "maze.h"
+#include "../maze.h"
 
 #include <iostream>
 #include <fstream>

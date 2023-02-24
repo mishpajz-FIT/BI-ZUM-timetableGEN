@@ -9,8 +9,9 @@ SRC_DIR := src
 
 TARGET := $(BIN_DIR)/$(PROJECT)
 
-SOURCES := $(wildcard ${SRC_DIR}/*.cpp)
+SOURCES := $(wildcard ${SRC_DIR}/*.cpp  ${SRC_DIR}/*/*.cpp)
 OBJECTS := $(patsubst ${SRC_DIR}/%.cpp, ${OBJ_DIR}/%.o, ${SOURCES})
+ROOT := -I ./src
 
 .PHONY: default run clean
 
@@ -22,7 +23,7 @@ ${TARGET}: ${OBJECTS}
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	@mkdir -p $(dir $@)
-	${CXX} ${FLAGS} -c $< -o $@
+	${CXX} ${FLAGS} ${ROOT} -c $< -o $@
 
 run: ${TARGET}
 	./bin/${NAME}
