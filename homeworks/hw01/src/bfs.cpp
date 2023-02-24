@@ -20,6 +20,8 @@ void BFSSolver::solve(bool verbose) {
             size_t index = maze.getIndex(neighbour);
             if (nodes[index].state == Solver::Node::State::undiscovered) {
                 nodes[index].state = Solver::Node::State::open;
+                nodes[index].previousNodeInPath = top;
+                nodesOpened++;
                 queue.push(neighbour);
             }
         }

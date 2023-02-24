@@ -1,14 +1,16 @@
 #include "solver.h"
 
 void DFSSolver::recProcedure(MazeCoordinates location, bool verbose) {
-    nodes[maze.getIndex(location)].state = Solver::Node::State::closed;
-
     if (verbose) {
         printProgress();
     }
 
     for (auto neighbour : maze.neighbours(location)) {
-        if (nodes[maze.getIndex(neighbour)].state != Solver::Node::State::closed) {
+        size_t index = maze.getIndex(neighbour);
+        if (nodes[index].state != Solver::Node::State::closed) {
+            nodes[index].state = Solver::Node::State::closed;
+            nodes[index].previousNodeInPath = location;
+            nodesOpened++;
             recProcedure(neighbour, verbose);
         }
     }
