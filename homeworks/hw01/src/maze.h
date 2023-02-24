@@ -26,6 +26,8 @@ struct MazeCoordinates {
     size_t getIndex(size_t rowLenght) const;
 
     bool validityCheck(size_t xSize, size_t ySize) const;
+
+    auto operator <=> (const MazeCoordinates &) const = default;
 };
 
 struct Maze {

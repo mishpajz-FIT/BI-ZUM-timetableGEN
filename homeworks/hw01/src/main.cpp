@@ -12,8 +12,8 @@ int main(int argc, char * argv []) {
     }
 
     try {
-        DFSSolver dfs(readMaze(argv[1]));
-        dfs.solve(true);
+        BFSSolver bfs(readMaze(argv[1]));
+        bfs.solve(true);
     }
     catch (const std::exception & e) {
         std::cout << "(!) " << e.what() << std::endl;
