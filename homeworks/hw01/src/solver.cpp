@@ -1,5 +1,9 @@
 #include "solver.h"
 
+bool Solver::MazeCoordinateDistace::operator< (const MazeCoordinateDistace & coordDistance) const {
+    return distance < coordDistance.distance;
+}
+
 void Solver::solve(bool verbose) {
     nodes = std::vector<Solver::Node>(maze.data.size());
     solveProgress = 0;

@@ -12,6 +12,10 @@ bool MazeCoordinates::validityCheck(size_t xSize, size_t ySize) const {
     return xSize > x && ySize > y;
 }
 
+double MazeCoordinates::distanceTo(const MazeCoordinates & coords) const {
+    return sqrt(pow((coords.x - x), 2.0) + pow((coords.y - y), 2.0));
+}
+
 void Maze::pushChar(char c) {
     if (c != 'X' && c != ' ') {
         throw MazeException("Unknown character.");

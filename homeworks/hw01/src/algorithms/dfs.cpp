@@ -1,6 +1,6 @@
 #include "solver.h"
 
-void DFSSolver::recProcedure(MazeCoordinates location, bool verbose) {
+void DFSSolver::recursiveNodeOpen(MazeCoordinates location, bool verbose) {
 
     if (solutionFound) {
         return;
@@ -22,7 +22,7 @@ void DFSSolver::recProcedure(MazeCoordinates location, bool verbose) {
                 return;
             }
 
-            recProcedure(neighbour, verbose);
+            recursiveNodeOpen(neighbour, verbose);
         }
     }
 }
@@ -30,7 +30,7 @@ void DFSSolver::recProcedure(MazeCoordinates location, bool verbose) {
 void DFSSolver::solve(bool verbose) {
     Solver::solve(verbose);
     solutionFound = false;
-    recProcedure(maze.start, verbose);
+    recursiveNodeOpen(maze.start, verbose);
     printResult();
 }
 

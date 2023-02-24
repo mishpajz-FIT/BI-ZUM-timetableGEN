@@ -5,6 +5,7 @@
 #include <string>
 #include <exception>
 #include <list>
+#include <cmath>
 
 class MazeException: public std::exception {
 protected:
@@ -28,6 +29,8 @@ struct MazeCoordinates {
     bool validityCheck(size_t xSize, size_t ySize) const;
 
     auto operator <=> (const MazeCoordinates &) const = default;
+
+    double distanceTo(const MazeCoordinates & coords) const;
 };
 
 struct Maze {
