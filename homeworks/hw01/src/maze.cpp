@@ -50,7 +50,7 @@ std::list<MazeCoordinates> Maze::neighbours(const MazeCoordinates & location) co
     MazeCoordinates coordinate(location);
 
     coordinate = location;
-    coordinate.y += 1;
+    coordinate.y -= 1;
     if (coordinate.validityCheck(rowLength, columnLength) && data[getIndex(coordinate)] == ' ') {
         result.push_back(coordinate);
     }
@@ -62,7 +62,7 @@ std::list<MazeCoordinates> Maze::neighbours(const MazeCoordinates & location) co
     }
 
     coordinate = location;
-    coordinate.y -= 1;
+    coordinate.y += 1;
     if (coordinate.validityCheck(rowLength, columnLength) && data[getIndex(coordinate)] == ' ') {
         result.push_back(coordinate);
     }
