@@ -25,6 +25,10 @@ bool Maze::validityCheck() const {
         throw MazeException("Incorrect maze dimensions.");
     }
 
+    if (maze[getIndex(start)] != ' ' || maze[getIndex(end)] != ' ') {
+        throw MazeException("Start or end position at impossible location in maze. (Probably inside wall)");
+    }
+
     if (!start.validityCheck(rowLength, columnLength) || !end.validityCheck(rowLength, columnLength)) {
         return false;
     }
