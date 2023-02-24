@@ -19,16 +19,7 @@ void Solver::printProgress() {
             } else if (maze.end.x == column && maze.end.y == row) {
                 std::cout << 'E';
             } else {
-                switch (nodes[i].state) {
-                    case Solver::Node::State::closed:
-                        std::cout << 'o';
-                        break;
-                    case Solver::Node::State::open:
-                        std::cout << '*';
-                        break;
-                    default:
-                        std::cout << maze.maze[i];
-                }
+                printNode(i);
             }
 
             i++;
@@ -36,15 +27,15 @@ void Solver::printProgress() {
         std::cout << std::endl;
     }
 
-    std::cout << "#step number (" << solveProgress++ << ")#" << std::endl;
+    std::cout << "_step_number_(" << solveProgress++ << ")_" << std::endl;
     printProgressInfo();
     printMazeInfo();
     printSeparator();
 }
 
 void Solver::printProgressInfo() const {
-    std::cout << " - o = closed" << std::endl;
-    std::cout << " - * = open" << std::endl;;
+    std::cout << "  o  = closed" << std::endl;
+    std::cout << "  *  = open" << std::endl;;
 }
 
 void Solver::printSeparator() const {
@@ -55,9 +46,26 @@ void Solver::printSeparator() const {
 }
 
 void Solver::printMazeInfo() const {
-    std::cout << "#maze tiles#" << std::endl;
-    std::cout << "  X  = wall" << std::endl;
+    std::cout << "_maze_tiles_" << std::endl;
+    std::cout << "  #  = wall" << std::endl;
     std::cout << " ' ' = space" << std::endl;
     std::cout << "  S  = start" << std::endl;
     std::cout << "  E  = end" << std::endl;
+}
+
+void Solver::printNode(size_t index) const {
+    switch (nodes[index].state) {
+        case Solver::Node::State::closed:
+            std::cout << 'o';
+            break;
+        case Solver::Node::State::open:
+            std::cout << '*';
+            break;
+        default:
+            if (maze.maze[index] == 'X') {
+                std::cout << '#';
+            } else {
+                std::cout << maze.maze[index];
+            }
+    }
 }

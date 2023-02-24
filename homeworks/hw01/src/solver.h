@@ -50,6 +50,8 @@ private:
 
     void printMazeInfo() const;
 
+    void printNode(size_t index) const;
+
 };
 
 struct DFSSolver: public Solver {
