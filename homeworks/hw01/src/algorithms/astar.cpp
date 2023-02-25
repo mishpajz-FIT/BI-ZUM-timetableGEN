@@ -3,8 +3,8 @@
 void AStarSolver::solve(bool verbose) {
     Solver::solve(verbose);
 
-    auto compare = [ ](const MazeCoordinateDistace & lhs, const MazeCoordinateDistace & rhs) { return rhs < lhs; };
-    std::priority_queue<MazeCoordinateDistace, std::vector<MazeCoordinateDistace>, decltype(compare)> queue(compare);
+    auto compare = [ ](const MazeCoordinateDistance & lhs, const MazeCoordinateDistance & rhs) { return rhs < lhs; };
+    std::priority_queue<MazeCoordinateDistance, std::vector<MazeCoordinateDistance>, decltype(compare)> queue(compare);
 
     std::vector<size_t> bestDistances(maze.data.size(), SIZE_T_MAX);
 

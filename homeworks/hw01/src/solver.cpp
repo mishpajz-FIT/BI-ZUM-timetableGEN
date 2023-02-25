@@ -1,6 +1,6 @@
 #include "solver.h"
 
-bool Solver::MazeCoordinateDistace::operator< (const MazeCoordinateDistace & coordDistance) const {
+bool Solver::MazeCoordinateDistance::operator< (const MazeCoordinateDistance & coordDistance) const {
     return distance < coordDistance.distance;
 }
 

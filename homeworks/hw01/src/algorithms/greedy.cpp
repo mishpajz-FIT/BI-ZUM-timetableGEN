@@ -3,8 +3,8 @@
 void GreedySolver::solve(bool verbose) {
     Solver::solve(verbose);
 
-    auto compare = [ ](const MazeCoordinateDistace & lhs, const MazeCoordinateDistace & rhs) { return rhs < lhs; };
-    std::priority_queue<MazeCoordinateDistace, std::vector<MazeCoordinateDistace>, decltype(compare)> queue(compare);
+    auto compare = [ ](const MazeCoordinateDistance & lhs, const MazeCoordinateDistance & rhs) { return rhs < lhs; };
+    std::priority_queue<MazeCoordinateDistance, std::vector<MazeCoordinateDistance>, decltype(compare)> queue(compare);
 
     queue.emplace(maze.start, maze.start.distanceTo(maze.end));
     nodes[maze.getIndex(maze.start)].state = Solver::Node::State::open;

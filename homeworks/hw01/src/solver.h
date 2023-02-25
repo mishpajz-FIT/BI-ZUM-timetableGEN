@@ -26,16 +26,16 @@ struct Solver {
         Node(): state(Solver::Node::State::undiscovered), previousNodeInPath(-1, -1) { }
     };
 
-    struct MazeCoordinateDistace {
+    struct MazeCoordinateDistance {
 
         MazeCoordinates coordinates;
         double distance;
 
-        MazeCoordinateDistace(): coordinates(-1, -1), distance(0.0) { }
+        MazeCoordinateDistance(): coordinates(-1, -1), distance(0.0) { }
 
-        MazeCoordinateDistace(const MazeCoordinates & coords, double d = 0.0): coordinates(coords), distance(d) { }
+        MazeCoordinateDistance(const MazeCoordinates & coords, double d = 0.0): coordinates(coords), distance(d) { }
 
-        bool operator < (const MazeCoordinateDistace & coordDistance) const;
+        bool operator < (const MazeCoordinateDistance & coordDistance) const;
     };
 
     Maze maze;
