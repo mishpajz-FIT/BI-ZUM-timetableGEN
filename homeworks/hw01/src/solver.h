@@ -108,4 +108,15 @@ struct GreedySolver: public Solver {
 
     void solve(bool verbose = false) override;
 };
+
+struct AStarSolver: public Solver {
+
+    AStarSolver(const Maze & m): Solver(m) { }
+
+    void solve(bool verbose = false) override;
+
+private:
+
+    double potential(const MazeCoordinates & from) const;
+};
 #endif /* SOLVER */

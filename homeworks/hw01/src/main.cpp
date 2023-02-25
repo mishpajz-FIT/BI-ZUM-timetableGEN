@@ -24,6 +24,7 @@ bool selection(const Maze & maze) {
     std::cout << " (2) - DFS" << std::endl;
     std::cout << " (3) - BFS" << std::endl;
     std::cout << " (4) - Greedy" << std::endl;
+    std::cout << " (5) - A*" << std::endl;
     std::cout << "or (0) to quit." << std::endl;
     std::cout << "Enter algorithm number (to suppress progrees, add 's') e.g. '2 s': ";
 
@@ -61,6 +62,9 @@ bool selection(const Maze & maze) {
             break;
         case 4:
             currentSolver = new GreedySolver(maze);
+            break;
+        case 5:
+            currentSolver = new AStarSolver(maze);
             break;
         default:
             throw InputException("Nonexisting selection.");

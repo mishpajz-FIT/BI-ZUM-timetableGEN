@@ -18,6 +18,12 @@ double MazeCoordinates::distanceTo(const MazeCoordinates & coords) const {
     return sqrt(pow(xValue, 2.0) + pow(yValue, 2.0));
 }
 
+double MazeCoordinates::manhattanDistanceTo(const MazeCoordinates & coords) const {
+    double xValue = (double)(coords.x) - (double)(x);
+    double yValue = (double)(coords.y) - (double)(y);
+    return abs(xValue) + abs(yValue);
+}
+
 void Maze::pushChar(char c) {
     if (c != 'X' && c != ' ') {
         throw MazeException("Unknown character.");

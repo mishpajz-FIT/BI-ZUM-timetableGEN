@@ -32,19 +32,8 @@ struct MazeCoordinates {
     auto operator <=> (const MazeCoordinates &) const = default;
 
     double distanceTo(const MazeCoordinates & coords) const;
-};
 
-struct MazeCoordinatesHash {
-    std::size_t operator() (const MazeCoordinates & coords) const {
-        size_t hash1 = std::hash<unsigned long>()(coords.x);
-        size_t hash2 = std::hash<unsigned long>()(coords.y);
-
-        if (hash1 != hash2) {
-            return hash1 ^ hash2;
-        }
-
-        return hash1;
-    }
+    double manhattanDistanceTo(const MazeCoordinates & coords) const;
 };
 
 struct Maze {
