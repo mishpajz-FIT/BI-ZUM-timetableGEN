@@ -14,26 +14,27 @@ void AStarSolver::solve(bool verbose) {
     nodes[startIndex].state = Solver::Node::State::open;
 
     while (!queue.empty()) {
-        MazeCoordinateDistace top = queue.top();
+        MazeCoordinates top = queue.top().coordinates;
         queue.pop();
+        size_t topIndex = maze.getIndex(top);
+        double topDistance = bestDistances[topIndex];
 
-        size_t topIndex = maze.getIndex(top.coordinates);
 
         if (nodes[topIndex].state == Solver::Node::State::closed) {
             continue;
         }
         nodes[topIndex].state = Solver::Node::State::closed;
 
-        if (top.coordinates == maze.end) {
+        if (top == maze.end) {
             printResult();
             return;
         }
 
-        for (auto neighbour : maze.neighbours(top.coordinates)) {
+        for (auto neighbour : maze.neighbours(top)) {
             size_t index = maze.getIndex(neighbour);
             if (nodes[index].state != Solver::Node::State::closed) {
 
-                double newDistance = top.distance + 1;
+                double newDistance = topDistance + 1;
                 if (newDistance >= bestDistances[index]) {
                     continue;
                 }
@@ -41,9 +42,9 @@ void AStarSolver::solve(bool verbose) {
                 bestDistances[index] = newDistance;
 
                 nodes[index].state = Solver::Node::State::open;
-                nodes[index].previousNodeInPath = top.coordinates;
+                nodes[index].previousNodeInPath = top;
                 nodesOpened++;
-                queue.emplace(neighbour, newDistance);
+                queue.emplace(neighbour, newDistance + potential(neighbour));
             }
         }
 
