@@ -20,10 +20,11 @@ public:
 bool selection(const Maze & maze) {
 
     std::cout << "Please choose algorithm." << std::endl;
-    std::cout << " (1) - DFS" << std::endl;
-    std::cout << " (2) - BFS" << std::endl;
-    std::cout << " (3) - Greedy" << std::endl;
-    std::cout << " or (0) to quit." << std::endl;
+    std::cout << " (1) - Random" << std::endl;
+    std::cout << " (2) - DFS" << std::endl;
+    std::cout << " (3) - BFS" << std::endl;
+    std::cout << " (4) - Greedy" << std::endl;
+    std::cout << "or (0) to quit." << std::endl;
     std::cout << "Enter algorithm number (to suppress progrees, add 's') e.g. '2 s': ";
 
     unsigned int number;
@@ -50,12 +51,15 @@ bool selection(const Maze & maze) {
         case 0:
             return false;
         case 1:
-            currentSolver = new DFSSolver(maze);
+            currentSolver = new RandomSolver(maze);
             break;
         case 2:
-            currentSolver = new BFSSolver(maze);
+            currentSolver = new DFSSolver(maze);
             break;
         case 3:
+            currentSolver = new BFSSolver(maze);
+            break;
+        case 4:
             currentSolver = new GreedySolver(maze);
             break;
         default:

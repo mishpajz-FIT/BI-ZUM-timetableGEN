@@ -13,7 +13,9 @@ bool MazeCoordinates::validityCheck(size_t xSize, size_t ySize) const {
 }
 
 double MazeCoordinates::distanceTo(const MazeCoordinates & coords) const {
-    return sqrt(pow((coords.x - x), 2.0) + pow((coords.y - y), 2.0));
+    double xValue = (double)(coords.x) - (double)(x);
+    double yValue = (double)(coords.y) - (double)(y);
+    return sqrt(pow(xValue, 2.0) + pow(yValue, 2.0));
 }
 
 void Maze::pushChar(char c) {
@@ -67,6 +69,7 @@ std::list<MazeCoordinates> Maze::neighbours(const MazeCoordinates & location) co
         result.push_back(coordinate);
     }
 
+    coordinate = location;
     coordinate.x += 1;
     if (coordinate.validityCheck(rowLength, columnLength) && data[getIndex(coordinate)] == ' ') {
         result.push_back(coordinate);

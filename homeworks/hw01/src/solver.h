@@ -77,7 +77,7 @@ struct RandomSolver: public Solver {
 
 private:
 
-    MazeCoordinates choose(std::unordered_set<MazeCoordinates, MazeCoordinatesHash> & from) const;
+    MazeCoordinates choose(std::vector<MazeCoordinates> & from) const;
 };
 
 struct DFSSolver: public Solver {
