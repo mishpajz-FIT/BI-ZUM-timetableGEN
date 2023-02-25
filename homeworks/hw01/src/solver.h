@@ -9,6 +9,8 @@
 #include <thread>
 #include <algorithm>
 #include <queue>
+#include <unordered_set>
+#include <random>
 
 struct Solver {
     struct Node {
@@ -67,11 +69,20 @@ private:
     void printNode(size_t index) const;
 };
 
+struct RandomSolver: public Solver {
+
+    RandomSolver(const Maze & m): Solver(m) { }
+
+    void solve(bool verbose = false) override;
+
+private:
+
+    MazeCoordinates choose(std::unordered_set<MazeCoordinates, MazeCoordinatesHash> & from) const;
+};
+
 struct DFSSolver: public Solver {
 
-    DFSSolver(Maze m): Solver(m), solutionFound(false) { }
-
-    virtual ~DFSSolver() { }
+    DFSSolver(const Maze & m): Solver(m), solutionFound(false) { }
 
     void solve(bool verbose = false) override;
 
@@ -86,19 +97,15 @@ protected:
 
 struct BFSSolver: public Solver {
 
-    BFSSolver(Maze m): Solver(m) { }
+    BFSSolver(const Maze & m): Solver(m) { }
 
     void solve(bool verbose = false) override;
 };
 
-struct GreedySolver: public DFSSolver {
+struct GreedySolver: public Solver {
 
-    GreedySolver(Maze m): DFSSolver(m) { }
+    GreedySolver(const Maze & m): Solver(m) { }
 
-protected:
-
-    void recursiveNodeOpen(MazeCoordinates v, bool verbose) override;
-
+    void solve(bool verbose = false) override;
 };
-
 #endif /* SOLVER */

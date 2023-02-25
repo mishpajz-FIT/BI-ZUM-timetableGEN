@@ -1,39 +1,38 @@
 #include "solver.h"
 
-void GreedySolver::recursiveNodeOpen(MazeCoordinates location, bool verbose) {
+void GreedySolver::solve(bool verbose) {
+    Solver::solve(verbose);
 
-    if (solutionFound) {
-        return;
-    }
+    auto compare = [ ](const MazeCoordinateDistace & lhs, const MazeCoordinateDistace & rhs) { return rhs < lhs; };
+    std::priority_queue<MazeCoordinateDistace, std::vector<MazeCoordinateDistace>, decltype(compare)> queue(compare);
 
-    if (verbose) {
-        printProgress();
-    }
+    queue.emplace(maze.start, maze.start.distanceTo(maze.end));
+    nodes[maze.getIndex(maze.start)].state = Solver::Node::State::open;
 
+    while (!queue.empty()) {
+        MazeCoordinates top = queue.top().coordinates;
+        queue.pop();
+        nodes[maze.getIndex(top)].state = Solver::Node::State::closed;
 
-    std::vector<Solver::MazeCoordinateDistace> distances;
+        if (top == maze.end) {
+            printResult();
+            return;
+        }
 
-    for (auto neighbour : maze.neighbours(location)) {
-        double dist = maze.end.distanceTo(neighbour);
-        distances.emplace_back(neighbour, dist);
-    }
-
-    std::sort(distances.begin(), distances.end());
-
-    for (auto neigbourDistance : distances) {
-        MazeCoordinates neighbour = neigbourDistance.coordinates;
-        size_t index = maze.getIndex(neighbour);
-        if (nodes[index].state != Solver::Node::State::closed) {
-            nodes[index].state = Solver::Node::State::closed;
-            nodes[index].previousNodeInPath = location;
-            nodesOpened++;
-
-            if (neighbour == maze.end) {
-                solutionFound = true;
-                return;
+        for (auto neighbour : maze.neighbours(top)) {
+            size_t index = maze.getIndex(neighbour);
+            if (nodes[index].state == Solver::Node::State::undiscovered) {
+                nodes[index].state = Solver::Node::State::open;
+                nodes[index].previousNodeInPath = top;
+                nodesOpened++;
+                queue.emplace(neighbour, neighbour.distanceTo(maze.end));
             }
+        }
 
-            recursiveNodeOpen(neighbour, verbose);
+        if (verbose) {
+            printProgress();
         }
     }
+
+    printResult();
 }
