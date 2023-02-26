@@ -17,6 +17,7 @@ void BFSSolver::solve(bool verbose) {
 
     queue.push(maze.start);
     nodes[maze.getIndex(maze.start)].state = Solver::Node::State::open;
+    nodesOpened++;
 
     while (!queue.empty()) {
         MazeCoordinates top = queue.front();

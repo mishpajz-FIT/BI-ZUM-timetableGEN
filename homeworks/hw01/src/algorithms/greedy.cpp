@@ -22,6 +22,7 @@ void GreedySolver::solve(bool verbose) {
 
     queue.emplace(maze.start, maze.start.euclideanDistanceTo(maze.end));
     nodes[maze.getIndex(maze.start)].state = Solver::Node::State::open;
+    nodesOpened++;
 
     while (!queue.empty()) {
         MazeCoordinates top = queue.top().coordinates;

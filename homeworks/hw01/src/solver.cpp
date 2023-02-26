@@ -98,13 +98,17 @@ void Solver::printResult() const {
 
     // Reconstruct and calculate path
     size_t pathLength = 1;
-    MazeCoordinates nextCoords = nodes[endIndex].previousNodeInPath;
-    size_t nextCoordsIndex = maze.getIndex(nextCoords);
-    while (nextCoords != maze.start) {
-        mazeCopy.data[nextCoordsIndex] = 'x'; // Change char in maze's copy in path
-        nextCoords = nodes[nextCoordsIndex].previousNodeInPath;
-        nextCoordsIndex = maze.getIndex(nextCoords);
-        pathLength++;
+    if (maze.start == maze.end) { // Edge case with start same as end
+        pathLength = 0;
+    } else {
+        MazeCoordinates nextCoords = nodes[endIndex].previousNodeInPath;
+        size_t nextCoordsIndex = maze.getIndex(nextCoords);
+        while (nextCoords != maze.start) {
+            mazeCopy.data[nextCoordsIndex] = 'x'; // Change char in maze's copy in path
+            nextCoords = nodes[nextCoordsIndex].previousNodeInPath;
+            nextCoordsIndex = maze.getIndex(nextCoords);
+            pathLength++;
+        }
     }
 
     // Change char for start and end

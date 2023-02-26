@@ -18,6 +18,7 @@ void RandomSolver::solve(bool verbose) {
 
     open.emplace_back(maze.start);
     nodes[maze.getIndex(maze.start)].state = Solver::Node::State::open;
+    nodesOpened++;
 
     while (!open.empty()) {
         MazeCoordinates top = choose(open); // Randomly choose node to close and open its neighbours

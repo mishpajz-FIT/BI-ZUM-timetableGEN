@@ -41,6 +41,16 @@ void DFSSolver::recursiveNodeOpen(MazeCoordinates location, bool verbose) {
 void DFSSolver::solve(bool verbose) {
     Solver::solve(verbose);
     solutionFound = false;
+
+    size_t startIndex = maze.getIndex(maze.start);
+    nodes[startIndex].state = Solver::Node::State::closed;
+    nodesOpened++;
+
+    if (maze.start == maze.end) { // Edge case with start same as end
+        printResult();
+        return;
+    }
+
     recursiveNodeOpen(maze.start, verbose);
     printResult();
 }

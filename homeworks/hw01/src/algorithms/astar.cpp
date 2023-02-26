@@ -28,6 +28,7 @@ void AStarSolver::solve(bool verbose) {
     queue.emplace(maze.start, 0);
     bestDistances[startIndex] = 0;
     nodes[startIndex].state = Solver::Node::State::open;
+    nodesOpened++;
 
     while (!queue.empty()) {
         MazeCoordinates top = queue.top().coordinates;
