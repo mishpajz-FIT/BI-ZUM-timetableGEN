@@ -1,8 +1,19 @@
+/**
+ * @file dfs.cpp
+ * @author Michal Dobes
+ * @date 2023-02-26
+ *
+ * @brief Depth-first search
+ *
+ * @copyright Copyright (c) 2023
+ *
+ */
+
 #include "solver.h"
 
 void DFSSolver::recursiveNodeOpen(MazeCoordinates location, bool verbose) {
 
-    if (solutionFound) {
+    if (solutionFound) { // Check if solution hasnt been found in another function call
         return;
     }
 
@@ -10,7 +21,7 @@ void DFSSolver::recursiveNodeOpen(MazeCoordinates location, bool verbose) {
         printProgress();
     }
 
-    for (auto neighbour : maze.neighbours(location)) {
+    for (auto neighbour : maze.neighbours(location)) { // Recursivley call on all neighbours of node
         size_t index = maze.getIndex(neighbour);
         if (nodes[index].state != Solver::Node::State::closed) {
             nodes[index].state = Solver::Node::State::closed;

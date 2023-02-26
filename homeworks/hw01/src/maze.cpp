@@ -12,7 +12,7 @@ bool MazeCoordinates::validityCheck(size_t xSize, size_t ySize) const {
     return xSize > x && ySize > y;
 }
 
-double MazeCoordinates::distanceTo(const MazeCoordinates & coords) const {
+double MazeCoordinates::euclideanDistanceTo(const MazeCoordinates & coords) const {
     double xValue = (double)(coords.x) - (double)(x);
     double yValue = (double)(coords.y) - (double)(y);
     return sqrt(pow(xValue, 2.0) + pow(yValue, 2.0));

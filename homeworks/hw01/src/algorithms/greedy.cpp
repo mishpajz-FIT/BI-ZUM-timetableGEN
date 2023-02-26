@@ -1,12 +1,26 @@
+/**
+ * @file greedy.cpp
+ * @author Michal Dobes
+ * @date 2023-02-26
+ *
+ * @brief Greedy search
+ *
+ * @copyright Copyright (c) 2023
+ *
+ */
+
 #include "solver.h"
 
 void GreedySolver::solve(bool verbose) {
     Solver::solve(verbose);
 
+    // Priority queue sorted from smallest distance
     auto compare = [ ](const MazeCoordinateDistance & lhs, const MazeCoordinateDistance & rhs) { return rhs < lhs; };
     std::priority_queue<MazeCoordinateDistance, std::vector<MazeCoordinateDistance>, decltype(compare)> queue(compare);
 
-    queue.emplace(maze.start, maze.start.distanceTo(maze.end));
+    // Same as BFS, modified with nodes selected with smallest distance to end first
+
+    queue.emplace(maze.start, maze.start.euclideanDistanceTo(maze.end));
     nodes[maze.getIndex(maze.start)].state = Solver::Node::State::open;
 
     while (!queue.empty()) {
@@ -25,7 +39,7 @@ void GreedySolver::solve(bool verbose) {
                 nodes[index].state = Solver::Node::State::open;
                 nodes[index].previousNodeInPath = top;
                 nodesOpened++;
-                queue.emplace(neighbour, neighbour.distanceTo(maze.end));
+                queue.emplace(neighbour, neighbour.euclideanDistanceTo(maze.end));
             }
         }
 

@@ -1,3 +1,14 @@
+/**
+ * @file bfs.cpp
+ * @author Michal Dobes
+ * @date 2023-02-26
+ *
+ * @brief Breadth-first search
+ *
+ * @copyright Copyright (c) 2023
+ *
+ */
+
 #include "solver.h"
 
 void BFSSolver::solve(bool verbose) {

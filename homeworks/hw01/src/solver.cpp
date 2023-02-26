@@ -11,13 +11,17 @@ void Solver::solve(bool verbose) {
 }
 
 void Solver::printProgress() {
+    // Delay for print to be visible in stdout
+    // Use max value based on maze size or minimum that is still possible to display
     std::this_thread::sleep_for(std::chrono::milliseconds(std::max(10000 / nodes.size(), (unsigned long)(50))));
-    std::cout << "\033[1;1H\033[2J" << std::endl;
+
+    std::cout << "\033[1;1H\033[2J" << std::endl; // Clean console
 
     size_t i = 0;
     for (size_t row = 0; row < maze.columnLength; row++) {
         for (size_t column = 0; column < maze.rowLength; column++) {
 
+            // Display start or end or character for node in maze
             if (maze.start.x == column && maze.start.y == row) {
                 std::cout << 'S';
             } else if (maze.end.x == column && maze.end.y == row) {
@@ -67,7 +71,7 @@ void Solver::printNode(size_t index) const {
             std::cout << '*';
             break;
         default:
-            if (maze.data[index] == 'X') {
+            if (maze.data[index] == 'X') { // Change wall character
                 std::cout << '#';
             } else {
                 std::cout << maze.data[index];
@@ -77,9 +81,9 @@ void Solver::printNode(size_t index) const {
 
 void Solver::printResult() const {
 
-    std::cout << "\033[1;1H\033[2J" << std::endl;
+    std::cout << "\033[1;1H\033[2J" << std::endl; // Clean console
 
-    Maze mazeCopy(maze);
+    Maze mazeCopy(maze); // Copy of maze (to change tiles with path information)
 
     size_t endIndex = maze.getIndex(maze.end);
 
@@ -92,16 +96,18 @@ void Solver::printResult() const {
         return;
     }
 
+    // Reconstruct and calculate path
     size_t pathLength = 1;
     MazeCoordinates nextCoords = nodes[endIndex].previousNodeInPath;
     size_t nextCoordsIndex = maze.getIndex(nextCoords);
     while (nextCoords != maze.start) {
-        mazeCopy.data[nextCoordsIndex] = 'x';
+        mazeCopy.data[nextCoordsIndex] = 'x'; // Change char in maze's copy in path
         nextCoords = nodes[nextCoordsIndex].previousNodeInPath;
         nextCoordsIndex = maze.getIndex(nextCoords);
         pathLength++;
     }
 
+    // Change char for start and end
     mazeCopy.data[maze.getIndex(maze.start)] = 'S';
     mazeCopy.data[maze.getIndex(maze.end)] = 'E';
 
