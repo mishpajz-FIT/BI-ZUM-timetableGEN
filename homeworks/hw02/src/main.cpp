@@ -1,9 +1,11 @@
-#include "distancesloader.h"
+#include <iostream>
+
+#include "utility/distancesloader.h"
 
 int main(int argc, char * argv []) {
 
     if (argc != 2) { // Check if has path as an argument
-        std::cout << "(!) Wrong amount of arguments! Add path to maze as an argument." << std::endl;
+        std::cout << "(!) Wrong amount of arguments! Add path to distances as an argument." << std::endl;
         return 1;
     }
 
@@ -15,6 +17,16 @@ int main(int argc, char * argv []) {
     catch (const std::exception & e) {
         std::cout << "(!) " << e.what() << std::endl;
         return 1;
+    }
+
+    size_t i = 0;
+    for (auto & cityValues : distances.values) {
+        std::cout << distances.cities[i];
+        for (auto value : cityValues) {
+            std::cout << ", " << value;
+        }
+        std::cout << std::endl;
+        i++;
     }
 
     return 0;

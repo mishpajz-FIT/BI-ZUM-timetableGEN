@@ -1,4 +1,4 @@
-PROJECT := hw01_dobesmic
+PROJECT := hw02_dobesmic
 
 CXX := g++
 FLAGS := -std=c++20 -O2 -Wall -pedantic

@@ -3,16 +3,17 @@
 
 #include <vector>
 #include <string>
+#include <sstream>
 
 struct Distances {
 
-    std::vector<std::vector<unsigned long>> distances;
+    std::vector<std::vector<unsigned long>> values;
     std::vector<std::string> cities;
 
-    Distances(): distances(), cities() { }
+    Distances(): values(), cities() { }
 
     Distances(const std::vector<std::vector<unsigned long>> d, std::vector<std::string> c):
-        distances(d),
+        values(d),
         cities(c) { }
 };
 
