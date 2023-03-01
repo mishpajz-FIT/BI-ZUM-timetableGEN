@@ -32,10 +32,12 @@ std::vector<Configuration> Configuration::neighbours() const {
     }
 
     std::vector<Configuration> results;
-    for (size_t i = 1; i < indexes.size(); i++) {
-        Configuration result = newConfiguration;
-        std::swap(result.indexes[0], result.indexes[i]);
-        results.push_back(result);
+    for (size_t i = 0; i < indexes.size() - 1; i++) {
+        for (size_t j = i + 1; j < indexes.size(); j++) {
+            Configuration result = newConfiguration;
+            std::swap(result.indexes[i], result.indexes[j]);
+            results.push_back(result);
+        }
     }
 
     return results;
@@ -107,6 +109,8 @@ std::pair<Configuration, unsigned long> bestConfiguration(std::vector<Configurat
     std::vector<std::pair<Configuration, unsigned long>> withDistances;
 
     if (verbose) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(std::max(configurations.size() * 17, (unsigned long)(1200))));
+        std::cout << "\033[1;1H\033[2J" << std::endl; // Clean console
         std::cout << "_configurations_:" << std::endl;
     }
 
@@ -136,6 +140,7 @@ Configuration hillclimbing(const Distances & distances, bool verbose) {
     Configuration initial(distances.cities.size());
     unsigned long initialDistance = totalDistance(initial, distances);
     std::pair<Configuration, unsigned long> current = std::make_pair(initial, initialDistance);
+
     if (verbose) {
         std::cout << initial << ": " << initialDistance << std::endl;
     }

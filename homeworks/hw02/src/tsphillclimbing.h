@@ -8,6 +8,7 @@
 #include <random>
 #include <exception>
 #include <iostream>
+#include <thread>
 
 struct Configuration {
 

@@ -1,4 +1,4 @@
-#include "distancesloader.h"
+#include "utility/distancesloader.h"
 
 const char * LoaderException::what() const noexcept {
     return message.c_str();
@@ -19,14 +19,13 @@ Distances readDistances(const std::string & filePath) {
     file.open(filePath, std::ios::in);
 
     if (!file.is_open()) {
-        throw LoaderException("File could not be opened.")
+        throw LoaderException("File could not be opened.");
     }
 
-    while (getline(file, line)) {
+    while (std::getline(file, line)) {
         row.clear();
 
-        std::stringstream lineStream;
-        lineStream.str(line);
+        std::stringstream lineStream(line);
 
         bool first = true;
         while (std::getline(lineStream, word, ',')) {
