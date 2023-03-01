@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "utility/distancesloader.h"
+#include "tsphillclimbing.h"
 
 int main(int argc, char * argv []) {
 
@@ -19,15 +20,7 @@ int main(int argc, char * argv []) {
         return 1;
     }
 
-    size_t i = 0;
-    for (auto & cityValues : distances.values) {
-        std::cout << distances.cities[i];
-        for (auto value : cityValues) {
-            std::cout << ", " << value;
-        }
-        std::cout << std::endl;
-        i++;
-    }
+    hillclimbing(distances, true);
 
     return 0;
 }
