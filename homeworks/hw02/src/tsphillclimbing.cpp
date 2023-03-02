@@ -183,18 +183,20 @@ std::pair<Configuration, unsigned long> hillclimbing(const Distances & distances
     return current;
 }
 
-void tsp(const Distances & distances) {
+void tsp(const Distances & distances, bool verbose) {
 
     std::pair<Configuration, unsigned long> result = std::make_pair(0, 0);
     bool firstRun = true;
 
-    size_t tries = 5;
+    size_t tries = distances.cities.size() / 2 + 3;
     for (size_t i = 0; i < tries; i++) {
-        printSeparator(true);
-        std::cout << "\033[1;1H\033[2J" << std::endl; // Clean console
-        std::cout << "TRY NO: (" << i + 1 << ")" << std::endl;
-        std::this_thread::sleep_for(std::chrono::milliseconds((unsigned long)(1000)));
-        std::pair<Configuration, unsigned long> run = hillclimbing(distances, true);
+        if (verbose) {
+            printSeparator(true);
+            std::cout << "\033[1;1H\033[2J" << std::endl; // Clean console
+            std::cout << "TRY NO: (" << i + 1 << ")" << std::endl;
+            std::this_thread::sleep_for(std::chrono::milliseconds((unsigned long)(1000)));
+        }
+        std::pair<Configuration, unsigned long> run = hillclimbing(distances, verbose);
         if (firstRun) {
             firstRun = false;
             result = run;
@@ -209,6 +211,15 @@ void tsp(const Distances & distances) {
     std::cout << "\033[1;1H\033[2J" << std::endl; // Clean console
     printSeparator(true);
     std::cout << "RESULT: " << std::endl;
-    std::cout << result.first << std::endl;
+    std::cout << "{ ";
+    for (size_t i = 0; i < result.first.indexes.size(); i++) {
+
+        std::cout << distances.cities[i];
+
+        if (i != result.first.indexes.size() - 1) {
+            std::cout << ", ";
+        }
+    }
+    std::cout << " }" << std::endl;
     std::cout << "distance = " << result.second << std::endl;
 }

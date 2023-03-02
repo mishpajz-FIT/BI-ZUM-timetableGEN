@@ -35,6 +35,6 @@ void printSeparator(bool big = false);
 
 std::pair<Configuration, unsigned long> hillclimbing(const Distances & distances, bool verbose = false);
 
-void tsp(const Distances & distances);
+void tsp(const Distances & distances, bool verbose = false);
 
 #endif /* TSPHILLCLIMBING_H */

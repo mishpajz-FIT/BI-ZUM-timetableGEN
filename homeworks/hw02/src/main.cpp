@@ -20,7 +20,7 @@ int main(int argc, char * argv []) {
         return 1;
     }
 
-    tsp(distances);
-
+    tsp(distances, true);
+    
     return 0;
 }
