@@ -8,24 +8,8 @@ Configuration::Configuration(size_t size): indexes() {
     shuffleFisherYates();
 }
 
-void Configuration::shuffleFisherYates() {
-
-    if (indexes.size() <= 1) {
-        return;
-    }
-
-    for (size_t i = 0; i < indexes.size() - 1; i++) {
-        size_t j = randomIndex(i, 0);
-        std::swap(indexes[i], indexes[j]);
-    }
-}
-
 std::vector<Configuration> Configuration::neighbours() const {
     Configuration newConfiguration(*this);
-
-    size_t firstIndex = newConfiguration.indexes.front();
-    newConfiguration.indexes.pop_front();
-    newConfiguration.indexes.push_back(firstIndex);
 
     if (indexes.size() <= 1) {
         return { };
@@ -33,7 +17,7 @@ std::vector<Configuration> Configuration::neighbours() const {
 
     std::vector<Configuration> results;
     for (size_t i = 0; i < indexes.size() - 1; i++) {
-        for (size_t j = i + 1; j < indexes.size(); j++) {
+        for (size_t j = i + 1; j < indexes.size(); j++) { // Generate all configurations with two indexes swapped
             Configuration result = newConfiguration;
             std::swap(result.indexes[i], result.indexes[j]);
             results.push_back(result);
@@ -52,11 +36,11 @@ std::ostream & operator << (std::ostream & os, const Configuration & configurati
         return os;
     }
 
-    for (size_t i = 0; i < configuration.indexes.size(); i++) {
+    for (size_t i = 0; i < configuration.indexes.size(); i++) { // Print each index
 
         os << configuration.indexes[i];
 
-        if (i != configuration.indexes.size() - 1) {
+        if (i != configuration.indexes.size() - 1) { // Separator between indexes (do not print on last index)
             os << ", ";
         }
     }
@@ -65,16 +49,29 @@ std::ostream & operator << (std::ostream & os, const Configuration & configurati
     return os;
 }
 
+void Configuration::shuffleFisherYates() {
+
+    if (indexes.size() <= 1) {
+        return;
+    }
+
+    for (size_t i = 0; i < indexes.size() - 1; i++) {
+        size_t j = randomIndex(i, 0);
+        std::swap(indexes[i], indexes[j]);
+    }
+}
+
 size_t Configuration::randomIndex(size_t largerThan, size_t smallerThan) const {
 
-    if (smallerThan == 0) {
+    if (smallerThan == 0) { // Special case (smallerThan should be indexes size if smallerThan == 0)
         smallerThan = indexes.size() - 1;
     }
 
-    if (largerThan > smallerThan) {
+    if (largerThan > smallerThan) { // Wrong arguments
         throw std::out_of_range("Random index out of range.");
     }
 
+    // Random number generation
     std::random_device randomDevice;
     std::mt19937 generator(randomDevice());
     std::uniform_int_distribution<size_t> distribution(largerThan, smallerThan);
@@ -90,13 +87,14 @@ unsigned long totalDistance(const Configuration & forConfiguration, const Distan
         return result;
     }
 
-    for (size_t i = 0; i < forConfiguration.indexes.size() - 1; i++) {
+    for (size_t i = 0; i < forConfiguration.indexes.size() - 1; i++) { // Calculate distance between each two indexes
         size_t current = forConfiguration.indexes[i];
         size_t next = forConfiguration.indexes[i + 1];
 
         result += distances.values[current][next];
     }
 
+    // Calculate  distance between first and last index (close the loop)
     size_t last = forConfiguration.indexes.back();
     size_t first = forConfiguration.indexes.front();
     result += distances.values[last][first];
@@ -113,7 +111,7 @@ std::pair<Configuration, unsigned long> bestConfiguration(std::vector<Configurat
         std::cout << "_configurations_:" << std::endl;
     }
 
-    for (auto & conf : configurations) {
+    for (auto & conf : configurations) { // For each configuration calculate distance
         unsigned long distance = totalDistance(conf, distances);
         withDistances.emplace_back(conf, distance);
 
@@ -122,12 +120,13 @@ std::pair<Configuration, unsigned long> bestConfiguration(std::vector<Configurat
         }
     }
 
+    // Sort configurations in ascending order based on distances
     auto comp = [ ](const std::pair<Configuration, unsigned long> & lhs, const std::pair<Configuration, unsigned long> & rhs) -> bool {
         return lhs.second < rhs.second;
     };
     std::sort(withDistances.begin(), withDistances.end(), comp);
 
-    return withDistances[0];
+    return withDistances[0]; // Return configuration with smallest distance
 }
 
 void printSeparator(bool big) {
@@ -142,22 +141,22 @@ void printSeparator(bool big) {
 
 std::pair<Configuration, unsigned long> hillclimbing(const Distances & distances, bool verbose) {
 
-    Configuration initial(distances.cities.size());
+    Configuration initial(distances.cities.size()); // Generate random initial configuration
     unsigned long initialDistance = totalDistance(initial, distances);
-    std::pair<Configuration, unsigned long> current = std::make_pair(initial, initialDistance);
-    std::pair<Configuration, unsigned long> best = current;
 
     if (verbose) {
         std::cout << initial << ": " << initialDistance << std::endl;
     }
 
     size_t i = 0;
+    std::pair<Configuration, unsigned long> current = std::make_pair(initial, initialDistance); // Configuration iterator
 
     while (true) {
         if (verbose) {
             printSeparator();
         }
 
+        // Get next iterator as neighbor with smallest distance
         std::pair<Configuration, unsigned long> next = bestConfiguration(current.first.neighbours(), distances, verbose);
 
         if (verbose) {
@@ -166,12 +165,14 @@ std::pair<Configuration, unsigned long> hillclimbing(const Distances & distances
             std::this_thread::sleep_for(std::chrono::milliseconds((unsigned long)(250)));
         }
 
-        if (next.second >= current.second) {
+        if (next.second >= current.second) { // If neighbour with smallest distance is not better, reached local minima
+            if (verbose) {
+                std::cout << "_local_minima_reached_" << std::endl;
+            }
             break;
         }
 
         current = next;
-        best = current;
     }
 
     if (verbose) {
@@ -183,12 +184,12 @@ std::pair<Configuration, unsigned long> hillclimbing(const Distances & distances
     return current;
 }
 
-void tsp(const Distances & distances, bool verbose) {
+unsigned long tsp(const Distances & distances, bool verbose) {
 
     std::pair<Configuration, unsigned long> result = std::make_pair(0, 0);
-    bool firstRun = true;
 
-    size_t tries = distances.cities.size() / 2 + 3;
+    bool firstRun = true;
+    size_t tries = distances.cities.size() / 2 + 3; // Calculate amount of restarts based on number of cities
     for (size_t i = 0; i < tries; i++) {
         if (verbose) {
             printSeparator(true);
@@ -196,13 +197,15 @@ void tsp(const Distances & distances, bool verbose) {
             std::cout << "TRY NO: (" << i + 1 << ")" << std::endl;
             std::this_thread::sleep_for(std::chrono::milliseconds((unsigned long)(1000)));
         }
-        std::pair<Configuration, unsigned long> run = hillclimbing(distances, verbose);
-        if (firstRun) {
+
+        std::pair<Configuration, unsigned long> run = hillclimbing(distances, verbose); // Perform hill climbing
+        if (firstRun) { // On first run store variables
             firstRun = false;
             result = run;
             continue;
         }
-        if (run.second < result.second) {
+
+        if (run.second < result.second) { // If hill climbing produced better result than before, add another try
             result = run;
             tries++;
         }
@@ -212,7 +215,7 @@ void tsp(const Distances & distances, bool verbose) {
     printSeparator(true);
     std::cout << "RESULT: " << std::endl;
     std::cout << "{ ";
-    for (size_t i = 0; i < result.first.indexes.size(); i++) {
+    for (size_t i = 0; i < result.first.indexes.size(); i++) { // Print names of cities that produced best configuration (with smallest distance)
 
         std::cout << distances.cities[i];
 
@@ -222,4 +225,6 @@ void tsp(const Distances & distances, bool verbose) {
     }
     std::cout << " }" << std::endl;
     std::cout << "distance = " << result.second << std::endl;
+
+    return result.second;
 }
