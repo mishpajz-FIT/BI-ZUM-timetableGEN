@@ -189,7 +189,7 @@ unsigned long tsp(const Distances & distances, bool verbose) {
     std::pair<Configuration, unsigned long> result = std::make_pair(0, 0);
 
     bool firstRun = true;
-    size_t tries = distances.cities.size() / 2 + 3; // Calculate amount of restarts based on number of cities
+    size_t tries = distances.cities.size() / 3 + 3; // Calculate amount of restarts based on number of cities
     for (size_t i = 0; i < tries; i++) {
         if (verbose) {
             printSeparator(true);
