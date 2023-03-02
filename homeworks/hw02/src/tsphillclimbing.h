@@ -24,15 +24,17 @@ struct Configuration {
 
 private:
 
-    size_t randomIndex(size_t largerThan = 0, size_t smallerThan = 0);
+    size_t randomIndex(size_t largerThan = 0, size_t smallerThan = 0) const;
 };
 
 unsigned long totalDistance(const Configuration & forConfiguration, const Distances & distances);
 
 std::pair<Configuration, unsigned long> bestConfiguration(std::vector<Configuration> configurations, const Distances & distances, bool verbose = false);
 
-Configuration hillclimbing(const Distances & distances, bool verbose = false);
+void printSeparator(bool big = false);
 
-void printSeparator();
+std::pair<Configuration, unsigned long> hillclimbing(const Distances & distances, bool verbose = false);
+
+void tsp(const Distances & distances);
 
 #endif /* TSPHILLCLIMBING_H */

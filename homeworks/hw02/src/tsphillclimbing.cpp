@@ -10,7 +10,7 @@ Configuration::Configuration(size_t size): indexes() {
 
 void Configuration::shuffleFisherYates() {
 
-    if (indexes.size() == 1) {
+    if (indexes.size() <= 1) {
         return;
     }
 
@@ -27,7 +27,7 @@ std::vector<Configuration> Configuration::neighbours() const {
     newConfiguration.indexes.pop_front();
     newConfiguration.indexes.push_back(firstIndex);
 
-    if (indexes.size() == 1) {
+    if (indexes.size() <= 1) {
         return { };
     }
 
@@ -65,7 +65,7 @@ std::ostream & operator << (std::ostream & os, const Configuration & configurati
     return os;
 }
 
-size_t Configuration::randomIndex(size_t largerThan, size_t smallerThan) {
+size_t Configuration::randomIndex(size_t largerThan, size_t smallerThan) const {
 
     if (smallerThan == 0) {
         smallerThan = indexes.size() - 1;
@@ -109,7 +109,6 @@ std::pair<Configuration, unsigned long> bestConfiguration(std::vector<Configurat
     std::vector<std::pair<Configuration, unsigned long>> withDistances;
 
     if (verbose) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(std::max(configurations.size() * 17, (unsigned long)(1200))));
         std::cout << "\033[1;1H\033[2J" << std::endl; // Clean console
         std::cout << "_configurations_:" << std::endl;
     }
@@ -128,41 +127,88 @@ std::pair<Configuration, unsigned long> bestConfiguration(std::vector<Configurat
     };
     std::sort(withDistances.begin(), withDistances.end(), comp);
 
-    if (verbose) {
-        std::cout << "_best_distance_: (" << withDistances.front().second << ")" << std::endl;
-    }
-
-    return withDistances.front();
+    return withDistances[0];
 }
 
-Configuration hillclimbing(const Distances & distances, bool verbose) {
+void printSeparator(bool big) {
+
+    if (big) {
+        std::cout << "****************************************" << std::endl;
+        return;
+    }
+
+    std::cout << "-------------------------" << std::endl;
+}
+
+std::pair<Configuration, unsigned long> hillclimbing(const Distances & distances, bool verbose) {
 
     Configuration initial(distances.cities.size());
     unsigned long initialDistance = totalDistance(initial, distances);
     std::pair<Configuration, unsigned long> current = std::make_pair(initial, initialDistance);
+    std::pair<Configuration, unsigned long> best = current;
 
     if (verbose) {
         std::cout << initial << ": " << initialDistance << std::endl;
     }
+
+    size_t i = 0;
+
     while (true) {
         if (verbose) {
             printSeparator();
         }
+
         std::pair<Configuration, unsigned long> next = bestConfiguration(current.first.neighbours(), distances, verbose);
+
+        if (verbose) {
+            std::cout << "_best_distance_: (" << current.second << ")" << std::endl;
+            std::cout << "_steps_: (" << i++ << ")" << std::endl;
+            std::this_thread::sleep_for(std::chrono::milliseconds((unsigned long)(250)));
+        }
+
         if (next.second >= current.second) {
             break;
         }
+
         current = next;
+        best = current;
     }
 
     if (verbose) {
         printSeparator();
-        std::cout << "Best reached distance: (" << current.second << ")" << std::endl;
+        std::cout << "_best_reached_distance_: (" << current.second << ")" << std::endl;
+        std::this_thread::sleep_for(std::chrono::milliseconds((unsigned long)(1000)));
     }
 
-    return current.first;
+    return current;
 }
 
-void printSeparator() {
-    std::cout << "-------------------------" << std::endl;
+void tsp(const Distances & distances) {
+
+    std::pair<Configuration, unsigned long> result = std::make_pair(0, 0);
+    bool firstRun = true;
+
+    size_t tries = 5;
+    for (size_t i = 0; i < tries; i++) {
+        printSeparator(true);
+        std::cout << "\033[1;1H\033[2J" << std::endl; // Clean console
+        std::cout << "TRY NO: (" << i + 1 << ")" << std::endl;
+        std::this_thread::sleep_for(std::chrono::milliseconds((unsigned long)(1000)));
+        std::pair<Configuration, unsigned long> run = hillclimbing(distances, true);
+        if (firstRun) {
+            firstRun = false;
+            result = run;
+            continue;
+        }
+        if (run.second < result.second) {
+            result = run;
+            tries++;
+        }
+    }
+
+    std::cout << "\033[1;1H\033[2J" << std::endl; // Clean console
+    printSeparator(true);
+    std::cout << "RESULT: " << std::endl;
+    std::cout << result.first << std::endl;
+    std::cout << "distance = " << result.second << std::endl;
 }

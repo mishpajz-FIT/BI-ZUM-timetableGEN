@@ -20,7 +20,7 @@ int main(int argc, char * argv []) {
         return 1;
     }
 
-    hillclimbing(distances, true);
+    tsp(distances);
 
     return 0;
 }
