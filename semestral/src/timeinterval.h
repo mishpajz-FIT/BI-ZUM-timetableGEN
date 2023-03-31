@@ -27,13 +27,10 @@ public:
         uint8_t hour;
         uint8_t minute;
 
-        TimeStamp(uint8_t h, uint8_t m): hour(h), minute(m) {
-            if (h >= 24 || m >= 60) {
-                throw std::invalid_argument("TimeStamp: Hour or minute is larger than possible.");
-            }
-        }
+        TimeStamp(uint8_t h, uint8_t m);
 
-        bool operator <=> (const TimeStamp & rhs) const = default;
+        bool operator < (const TimeStamp & rhs);
+        bool operator == (const TimeStamp & rhs);
     };
 
 private:
@@ -43,14 +40,9 @@ private:
     enum Parity parity;
 
 public:
-    TimeInterval(const enum Day & d, const TimeStamp & s, const TimeStamp & e,
-        const Parity & p = TimeInterval::Parity::Both):
-        day(d), startTime(s), endTime(e), parity(p) {
 
-        if (s >= e) {
-            throw std::invalid_argument("TimeInterval: Start time is after end time..");
-        }
-    }
+    TimeInterval(const enum Day & d, const TimeStamp & s, const TimeStamp & e,
+        const Parity & p = TimeInterval::Parity::Both);
 
 };
 
