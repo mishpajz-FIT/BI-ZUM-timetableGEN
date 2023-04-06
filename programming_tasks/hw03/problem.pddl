@@ -1,18 +1,13 @@
-(define (problem warehouse15x15) (:domain warehouse)
+(define (problem warehouse10x10) (:domain warehouse)
     (:objects 
-        x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 - position
-        y1 y2 y3 y4 y5 y6 y7 y8 y9 y10 y11 y12 y13 y14 y15 - position
-        r2d2 c3po r5d4 bd1 - robot
+        x1 x2 x3 x4 x5 x6 x7 x8 x9 x10  - position
+        y1 y2 y3 y4 y5 y6 y7 y8 y9 y10  - position
+        r1 r2 r3 - robot
         A B C D E F G - item
     )
 
     (:init
         ; coordinate comparison
-        (decremented x15 x14)
-        (decremented x14 x13)
-        (decremented x13 x12)
-        (decremented x12 x11)
-        (decremented x11 x10)
         (decremented x10 x9)
         (decremented x9 x8)
         (decremented x8 x7)
@@ -20,6 +15,7 @@
         (decremented x6 x5)
         (decremented x5 x4)
         (decremented x4 x3)
+        (decremented x3 x2)
         (decremented x2 x1)
         (incremented x1 x2)
         (incremented x2 x3)
@@ -30,17 +26,7 @@
         (incremented x7 x8)
         (incremented x8 x9)
         (incremented x9 x10)
-        (incremented x10 x11)
-        (incremented x11 x12)
-        (incremented x12 x13)
-        (incremented x13 x14)
-        (incremented x14 x15)
-
-        (decremented y15 y14)
-        (decremented y14 y13)
-        (decremented y13 y12)
-        (decremented y12 y11)
-        (decremented y11 y10)
+        
         (decremented y10 y9)
         (decremented y9 y8)
         (decremented y8 y7)
@@ -48,6 +34,7 @@
         (decremented y6 y5)
         (decremented y5 y4)
         (decremented y4 y3)
+        (decremented y3 y2)
         (decremented y2 y1)
         (incremented y1 y2)
         (incremented y2 y3)
@@ -58,35 +45,27 @@
         (incremented y7 y8)
         (incremented y8 y9)
         (incremented y9 y10)
-        (incremented y10 y11)
-        (incremented y11 y12)
-        (incremented y12 y13)
-        (incremented y13 y14)
-        (incremented y14 y15)
 
         ; robots
-        (at r2d2 x1 y1)
-        (at c3po x2 y1)
-        (at r5d4 x3 y1)
-        (at bd1 x4 y1)
-        (empty r2d2)
-        (empty c3po)
-        (empty r5d4)
-        (empty bd1)
+        (at r1 x1 y1)
+        (at r2 x2 y1)
+        (at r3 x3 y1)
+        (empty r1)
+        (empty r2)
+        (empty r3)
 
         ; items
-        (item-at A x2 y5)
-        (item-at B x7 y11)
-        (item-at C x9 y5)
-        (item-at D x10 y2)
-        (item-at E x4 y9)
-        (item-at F x12 y1)
-        (item-at F x8 y8)
+        (item-at A x6 y6)
+        (item-at B x5 y8)
+        (item-at C x3 y5)
+        (item-at D x8 y8)
+        (item-at E x5 y8)
+        (item-at F x2 y5)
+        (item-at G x1 y9)
 
         ; targets
-        (target x15 y1)
-        (target x15 y7)
-        (target x15 y15)
+        (target x10 y10)
+        (target x10 y5)
     )
 
     (:goal (and
@@ -97,6 +76,6 @@
         (item-done E)
         (item-done F)
         (item-done G)
-
-    ))
+        )
+    )
 )
