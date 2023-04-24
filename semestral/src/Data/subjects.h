@@ -1,7 +1,7 @@
 #ifndef SUBJECTS_H
 #define SUBJECTS_H
 
-#include "timeinterval.h"
+#include "Data/timeinterval.h"
 
 #include <cstdint>
 #include <vector>
@@ -16,11 +16,11 @@ struct Schedule {
 
 struct Entry {
     uint32_t id;
-    std::vector<Entry> schedules;
+    std::vector<Schedule> schedules;
 };
 
 struct Course {
-    std::string code;
+    std::string name;
     std::vector<Entry> entries;
 };
 

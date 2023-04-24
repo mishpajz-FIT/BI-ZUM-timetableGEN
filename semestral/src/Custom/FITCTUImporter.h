@@ -1,16 +1,33 @@
-//
-// Created by Michal Dobes on 24.04.2023.
-//
+#ifndef FITCTUIMPORTER_H
+#define FITCTUIMPORTER_H
 
-#ifndef SEMESTRAL_FITCTUIMPORTER_H
-#define SEMESTRAL_FITCTUIMPORTER_H
+#include "Utility/importers.h"
+#include "Extensions/string_extensions.h"
 
+#include <fstream>
+#include <regex>
 
+class FITCTUImporter: public Importer{
 
-class FITCTUImporter {
+    std::ifstream file;
+
+    FITCTUImporter(const std::string & filename);
+
+    std::vector<Course> import() override;
+
+private:
+
+    enum class ReadingStates {
+        Course,
+        Entry,
+        Capacity,
+        TimeInterval,
+        Parity,
+        Lecturer,
+        Location
+    };
 
 };
 
 
-
-#endif //SEMESTRAL_FITCTUIMPORTER_H
+#endif /* FITCTUIMPORTER_H */

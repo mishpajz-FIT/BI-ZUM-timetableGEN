@@ -1,3 +1,9 @@
-//
-// Created by Michal Dobes on 24.04.2023.
-//
+#include <utility>
+
+#include "importers.h"
+
+ImporterException::ImporterException(std::string message): msg(std::move(message)) {}
+
+const char *ImporterException::what() const noexcept {
+    return msg.c_str();
+}

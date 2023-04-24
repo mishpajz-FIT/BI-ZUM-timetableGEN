@@ -1,4 +1,4 @@
-#include "timeinterval.h"
+#include "Data/timeinterval.h"
 
 TimeInterval::TimeStamp::TimeStamp(uint8_t h, uint8_t m): hour(h), minute(m) {
     if (h >= 24 || m >= 60) {
