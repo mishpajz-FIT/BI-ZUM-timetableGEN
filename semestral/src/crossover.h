@@ -2,19 +2,22 @@
 #define CROSSOVER_H
 
 #include <vector>
+#include <utility>
+#include <cstdint>
+#include <random>
 
 using Genome = std::vector<uint32_t>;
 
 struct Crossover {
 
-    virtual ~Crossover();
+    virtual ~Crossover() = default;
 
-    virtual Timetable & perform(Genome & table) = 0;
+    virtual Genome perform(const Genome & lParent, const Genome & rParent) = 0;
 };
 
 struct SimpleCrossover: Crossover {
 
-    virtual Timetable & perform(Genome & table);
-}
+    Genome perform(const Genome & lParent, const Genome & rParent) override;
+};
 
 #endif /* CROSSOVER_H */

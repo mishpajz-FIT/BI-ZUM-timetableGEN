@@ -6,28 +6,40 @@
 
 #include <vector>
 #include <tuple>
+#include <map>
+#include <unordered_map>
+#include <string>
 
 using Genome = std::vector<uint32_t>;
 
 class Evolution {
 
-    const std::vector<Subject> subjects;
+    const std::vector<Course> courses;
+
+    Genome maxValueGenome;
+    std::vector<size_t> genomeIndexToCourse;
+    std::vector<size_t> genomeIndexToClass;
 
     std::vector<Genome> currentGeneration;
+    size_t generationNumber;
 
 public:
 
-    Evolution(const std::vector<Subject> & s);
+    Evolution(const std::vector<Course> & s);
 
-    ~Evolution();
+    ~Evolution() = default;
 
-    std::vector<std::vector<Subject>> evolve();
+    std::vector<std::map<Course, std::map<std::string, uint32_t>>> evolve(size_t generationSize = 100, size_t maxGenerations = 100);
 
 private:
 
-    bool mutate(Genome & timetable);
+    void createInitialGenerations(size_t generationSize);
 
-    std::tuple<Genome, Genome> crossover();
+    void applyCrossovers(std::vector<Genome> & generation);
+
+    void applyMutations(std::vector<Genome> & generation);
+
+    static size_t randomNumber(size_t maxValue) ;
 
 };
 

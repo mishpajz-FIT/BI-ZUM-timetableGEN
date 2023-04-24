@@ -16,7 +16,7 @@ struct Entry {
 template <typename T>
 using dictionary = std::map<std::string, T>;
 
-class Subject {
+class Course {
     std::string code;
     dictionary<std::vector<Entry>> entries;
 };

@@ -14,12 +14,14 @@ struct Entry {
     std::vector<TimeInterval> timeslots;
 };
 
-template <typename T>
-using dictionary = std::map<std::string, T>;
+struct Class {
+    uint32_t id;
+    std::vector<Entry> entries;
+};
 
-class Subject {
+struct Course {
     std::string code;
-    dictionary<std::vector<Entry>> entries;
+    std::vector<Class> classes;
 };
 
 #endif /* SUBJECTS_H */
