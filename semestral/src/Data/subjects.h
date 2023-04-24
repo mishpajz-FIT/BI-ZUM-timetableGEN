@@ -9,19 +9,19 @@
 #include <string>
 #include <tuple>
 
-struct Entry {
+struct Schedule {
     uint32_t id;
     std::vector<TimeInterval> timeslots;
 };
 
-struct Class {
+struct Entry {
     uint32_t id;
-    std::vector<Entry> entries;
+    std::vector<Entry> schedules;
 };
 
 struct Course {
     std::string code;
-    std::vector<Class> classes;
+    std::vector<Entry> entries;
 };
 
 #endif /* SUBJECTS_H */
