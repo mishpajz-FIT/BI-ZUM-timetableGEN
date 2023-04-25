@@ -3,11 +3,13 @@
 
 #include "Utility/importers.h"
 #include "Extensions/string_extensions.h"
+#include "timeinterval.h"
 
 #include <fstream>
 #include <regex>
+#include <map>
 
-class FITCTUImporter: public Importer{
+class FITCTUImporter: public Importer {
 
     std::ifstream file;
 
@@ -15,17 +17,22 @@ class FITCTUImporter: public Importer{
 
     std::vector<Course> import() override;
 
-private:
+protected:
 
     enum class ReadingStates {
         Course,
-        Entry,
+        Id,
+        Type,
         Capacity,
-        TimeInterval,
-        Parity,
+        Time,
         Lecturer,
         Location
     };
+
+    std::map<std::string, TimeInterval::Day> dayMapping;
+    std::regex capacityRegex;
+    std::regex timeRegex;
+    std::map<std::string, TimeInterval::Parity> parityMapping;
 
 };
 

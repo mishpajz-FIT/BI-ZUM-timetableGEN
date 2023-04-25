@@ -1,25 +1,25 @@
 #include "evolution.h"
 
 Evolution::Evolution(const std::vector<Course> & c):
-        courses(c),
-        genomeIndexToCourse(),
-        genomeIndexToEntry(),
-        maxValueGenome(),
-        currentGeneration(),
-        generationNumber(0) {
+    courses(c),
+    genomeIndexToCourse(),
+    genomeIndexToEntry(),
+    maxValueGenome(),
+    currentGeneration(),
+    generationNumber(0) {
 
 
     size_t courIndex = 0;
-    for (auto & cour: courses) {
+    for (auto & cour : courses) {
         size_t claIndex = 0;
 
-        for (auto & entr: cour.entries) {
-            maxValueGenome.push_back(entr.schedules.size());
+        for (auto & sched : cour.schedules) {
+            maxValueGenome.push_back(sched.second.timeslots.size());
 
             genomeIndexToCourse.push_back(courIndex);
             genomeIndexToEntry.push_back(claIndex);
 
-            claIndex++;
+            schedIndex++;
         }
 
         courIndex++;
@@ -42,16 +42,16 @@ Evolution::evolve(size_t generationSize, size_t maxGenerations) {
         std::vector<Genome> newGeneration;
         for (size_t child = 0; child < generationSize; child++)
             size_t lParentIndex = randomNumber(genomeSize);
-            size_t rParentIndex = randomNumber(genomeSize);
+        size_t rParentIndex = randomNumber(genomeSize);
 
 
-            Genome child = crossovers[0]->perform(currentGeneration[lParentIndex], currentGeneration[rParentIndex]);
+        Genome child = crossovers[0]->perform(currentGeneration[lParentIndex], currentGeneration[rParentIndex]);
 
-            newGeneration.push_back(child);
-        }
-
-        std::swap(currentGeneration, newGeneration);
+        newGeneration.push_back(child);
     }
+
+    std::swap(currentGeneration, newGeneration);
+}
 }
 
 void Evolution::createInitialGenerations(size_t generationSize) {

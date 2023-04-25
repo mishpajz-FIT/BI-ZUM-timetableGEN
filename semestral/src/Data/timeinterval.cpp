@@ -1,6 +1,6 @@
 #include "Data/timeinterval.h"
 
-TimeInterval::TimeStamp::TimeStamp(uint8_t h, uint8_t m): hour(h), minute(m) {
+TimeInterval::TimeStamp::TimeStamp(uint32_t h, uint32_t m): hour(h), minute(m) {
     if (h >= 24 || m >= 60) {
         throw std::invalid_argument("TimeStamp: Hour or minute is larger than possible.");
     }

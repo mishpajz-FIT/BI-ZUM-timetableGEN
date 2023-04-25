@@ -11,17 +11,13 @@
 
 struct Schedule {
     uint32_t id;
+    std::string additionalInformation;
     std::vector<TimeInterval> timeslots;
-};
-
-struct Entry {
-    uint32_t id;
-    std::vector<Schedule> schedules;
 };
 
 struct Course {
     std::string name;
-    std::vector<Entry> entries;
+    std::map<std::string, Schedule> schedules;
 };
 
 #endif /* SUBJECTS_H */

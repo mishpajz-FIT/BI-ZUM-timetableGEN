@@ -27,7 +27,7 @@ public:
         uint8_t hour;
         uint8_t minute;
 
-        TimeStamp(uint8_t h, uint8_t m);
+        TimeStamp(uint32_t h, uint32_t m);
 
         bool operator < (const TimeStamp & rhs);
         bool operator == (const TimeStamp & rhs);
