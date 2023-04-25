@@ -57,70 +57,86 @@ std::vector<Course> FITCTUImporter::import() {
         }
 
         switch (state) {
-            case ReadingStates::Course:
-                addedCourseToResult = false;
-                currentCourse.name = line;
-                state = ReadingStates::Type;
-                break;
-            case ReadingStates::Id:
-                try {
-                    currentSchedule.id = std::stoul(line);
+            case ReadingStates::Course: {
+                    addedCourseToResult = false;
+                    currentCourse.name = line;
+                    state = ReadingStates::Type;
+                    break;
                 }
-                catch (...) {
-                    throw ImporterException("Wrong format of entry id in file.");
+            case ReadingStates::Id: {
+                    try {
+                        currentSchedule.id = std::stoul(line);
+                    }
+                    catch (...) {
+                        throw ImporterException("Wrong format of entry id in file.");
+                    }
+                    break;
                 }
-                break;
-            case ReadingStates::Type:
-                currentScheduleType = line;
-                state = ReadingStates::Time;
-                break;
-            case ReadingStates::Time:
-                std::smatch match;
-                if (!std::regex_match(line, match, timeRegex) || (match.size() != 6 || !dayMapping.contains(match[1].str()))) {
-                    throw ImporterException("Wrong format of time in file.");
+            case ReadingStates::Type: {
+                    currentScheduleType = line;
+                    state = ReadingStates::Capacity;
+                    break;
                 }
-
-                TimeInterval::Day day = dayMapping[match[1].str()];
-
-                TimeInterval::TimeStamp start(std::stoul(match[2].str()), std::stoul(match[3].str()));
-                TimeInterval::TimeStamp end(std::stoul(match[4].str()), std::stoul(match[5].str()));
-
-                std::fstream::pos_type pos = file.tellg();
-                if (!std::getline(file, line)) {
-                    throw ImporterException("File missing required lines.");
+            case ReadingStates::Capacity: {
+                    if (!std::regex_match(line, capacityRegex)) {
+                        throw ImporterException("Wrong format of capacity in file.");
+                    }
+                    currentSchedule.additionalInformation.append(line);
+                    currentSchedule.additionalInformation.push_back('\n');
+                    state = ReadingStates::Time;
+                    break;
                 }
+            case ReadingStates::Time: {
+                    std::smatch match;
+                    if (!std::regex_match(line, match, timeRegex) || (match.size() != 6 || !dayMapping.contains(match[1].str()))) {
+                        throw ImporterException("Wrong format of time in file.");
+                    }
 
-                TimeInterval::Parity parity = TimeInterval::Parity::Both;
-                if (parityMapping.contains(line)) {
-                    parity = parityMapping[line];
+                    TimeInterval::Day day = dayMapping[match[1].str()];
 
-                    pos = file.tellg();
+                    TimeInterval::TimeStamp start(std::stoul(match[2].str()), std::stoul(match[3].str()));
+                    TimeInterval::TimeStamp end(std::stoul(match[4].str()), std::stoul(match[5].str()));
+
+                    std::fstream::pos_type pos = file.tellg();
                     if (!std::getline(file, line)) {
                         throw ImporterException("File missing required lines.");
                     }
+
+                    TimeInterval::Parity parity = TimeInterval::Parity::Both;
+                    if (parityMapping.contains(line)) {
+                        parity = parityMapping[line];
+
+                        pos = file.tellg();
+                        if (!std::getline(file, line)) {
+                            throw ImporterException("File missing required lines.");
+                        }
+                    }
+
+                    currentSchedule.timeslots.emplace_back(day, start, end, parity);
+
+                    if (std::regex_match(line, match, timeRegex)) {
+                        file.seekg(pos, std::ios_base::beg);
+                        break;
+                    }
+
+                    state = ReadingStates::Lecturer;
                 }
-
-                currentSchedule.timeslots.emplace_back(day, start, end, parity);
-
-                if (std::regex_match(line, match, timeRegex)) {
-                    file.seekg(pos, std::ios_base::beg);
+            case ReadingStates::Lecturer: {
+                    currentSchedule.additionalInformation.append(line);
+                    currentSchedule.additionalInformation.push_back('\n');
+                    state = ReadingStates::Location;
                     break;
                 }
+            case ReadingStates::Location: {
+                    currentSchedule.additionalInformation.append(line);
+                    currentSchedule.additionalInformation.push_back('\n');
+                    currentCourse.schedules[currentScheduleType] = currentSchedule;
 
-                state = ReadingStates::Lecturer;
-            case ReadingStates::Lecturer:
-                currentSchedule.additionalInformation.append(line);
-                state = ReadingStates::Location;
-                break;
-            case ReadingStates::Location:
-                currentSchedule.additionalInformation.push_back('\n');
-                currentSchedule.additionalInformation.append(line);
-                currentCourse.schedules[currentScheduleType] = currentSchedule;
+                    currentScheduleType.clear();
+                    currentSchedule = Schedule();
 
-                currentScheduleType.clear();
-                currentSchedule = Schedule();
-
-                state = ReadingStates::Id;
+                    state = ReadingStates::Id;
+                }
         }
     }
 

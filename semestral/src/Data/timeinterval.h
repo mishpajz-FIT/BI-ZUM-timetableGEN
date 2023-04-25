@@ -29,8 +29,10 @@ public:
 
         TimeStamp(uint32_t h, uint32_t m);
 
-        bool operator < (const TimeStamp & rhs);
-        bool operator == (const TimeStamp & rhs);
+        bool operator < (const TimeStamp & rhs) const;
+        bool operator == (const TimeStamp & rhs) const;
+        bool operator > (const TimeStamp & rhs) const;
+        bool operator >= (const TimeStamp & rhs) const;
     };
 
 private:

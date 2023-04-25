@@ -18,12 +18,11 @@ class Evolution {
 
     Genome maxValueGenome;
     std::vector<size_t> genomeIndexToCourse;
-    std::vector<size_t> genomeIndexToEntry;
+    std::vector<size_t> genomeIndexToSchedule;
 
     std::vector<std::unique_ptr<Crossover>> crossovers;
 
     std::vector<Genome> currentGeneration;
-    size_t generationNumber;
 
 public:
 
@@ -37,7 +36,7 @@ private:
 
     void createInitialGenerations(size_t generationSize);
 
-    static size_t randomNumber(size_t maxValue) ;
+    static size_t randomNumber(size_t maxValue);
 
 };
 

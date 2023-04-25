@@ -6,12 +6,20 @@ TimeInterval::TimeStamp::TimeStamp(uint32_t h, uint32_t m): hour(h), minute(m) {
     }
 }
 
-bool TimeInterval::TimeStamp::operator<(const TimeStamp & rhs) {
+bool TimeInterval::TimeStamp::operator<(const TimeStamp & rhs) const {
     return std::tie(hour, minute) < std::tie(rhs.hour, rhs.minute);
 }
 
-bool TimeInterval::TimeStamp::operator==(const TimeStamp & rhs) {
+bool TimeInterval::TimeStamp::operator==(const TimeStamp & rhs) const {
     return std::tie(hour, minute) == std::tie(rhs.hour, rhs.minute);
+}
+
+bool TimeInterval::TimeStamp::operator > (const TimeStamp & rhs) const {
+    return rhs < *this;
+}
+
+bool TimeInterval::TimeStamp::operator >= (const TimeStamp & rhs) const {
+    return (*this > rhs) || (*this == rhs);
 }
 
 TimeInterval::TimeInterval(const enum Day & d, const TimeStamp & s, const TimeStamp & e,

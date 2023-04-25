@@ -3,7 +3,7 @@
 
 #include "Utility/importers.h"
 #include "Extensions/string_extensions.h"
-#include "timeinterval.h"
+#include "Data/timeinterval.h"
 
 #include <fstream>
 #include <regex>
