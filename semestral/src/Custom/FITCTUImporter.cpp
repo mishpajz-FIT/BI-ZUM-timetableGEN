@@ -35,11 +35,12 @@ std::vector<Course> FITCTUImporter::import() {
     Course currentCourse;
     bool addedCourseToResult = false;
     std::string currentScheduleType;
-    Schedule currentSchedule;
+    Entry currentEntry;
 
     std::string line;
+    size_t lineCount = 0;
     while (std::getline(file, line)) {
-
+        lineCount++;
         trim(line);
 
         if (line.empty()) {
@@ -60,16 +61,17 @@ std::vector<Course> FITCTUImporter::import() {
             case ReadingStates::Course: {
                     addedCourseToResult = false;
                     currentCourse.name = line;
-                    state = ReadingStates::Type;
+                    state = ReadingStates::Id;
                     break;
                 }
             case ReadingStates::Id: {
                     try {
-                        currentSchedule.id = std::stoul(line);
+                        currentEntry.id = std::stoul(line);
                     }
                     catch (...) {
-                        throw ImporterException("Wrong format of entry id in file.");
+                        throw ImporterException("Wrong format of ID in file.");
                     }
+                    state = ReadingStates::Type;
                     break;
                 }
             case ReadingStates::Type: {
@@ -81,8 +83,8 @@ std::vector<Course> FITCTUImporter::import() {
                     if (!std::regex_match(line, capacityRegex)) {
                         throw ImporterException("Wrong format of capacity in file.");
                     }
-                    currentSchedule.additionalInformation.append(line);
-                    currentSchedule.additionalInformation.push_back('\n');
+                    currentEntry.additionalInformation.append(line);
+                    currentEntry.additionalInformation.push_back('\n');
                     state = ReadingStates::Time;
                     break;
                 }
@@ -101,46 +103,55 @@ std::vector<Course> FITCTUImporter::import() {
                     if (!std::getline(file, line)) {
                         throw ImporterException("File missing required lines.");
                     }
+                    trim(line);
 
                     TimeInterval::Parity parity = TimeInterval::Parity::Both;
                     if (parityMapping.contains(line)) {
                         parity = parityMapping[line];
 
+                        lineCount++;
                         pos = file.tellg();
                         if (!std::getline(file, line)) {
                             throw ImporterException("File missing required lines.");
                         }
+                        trim(line);
                     }
 
-                    currentSchedule.timeslots.emplace_back(day, start, end, parity);
+                    currentEntry.timeslots.emplace_back(day, start, end, parity);
 
                     if (std::regex_match(line, match, timeRegex)) {
                         file.seekg(pos, std::ios_base::beg);
                         break;
                     }
-
-                    state = ReadingStates::Lecturer;
+                    lineCount++;
+                    state = ReadingStates::Additional;
                 }
-            case ReadingStates::Lecturer: {
-                    currentSchedule.additionalInformation.append(line);
-                    currentSchedule.additionalInformation.push_back('\n');
-                    state = ReadingStates::Location;
-                    break;
-                }
-            case ReadingStates::Location: {
-                    currentSchedule.additionalInformation.append(line);
-                    currentSchedule.additionalInformation.push_back('\n');
-                    currentCourse.schedules[currentScheduleType] = currentSchedule;
+            case ReadingStates::Additional: {
+                    currentEntry.additionalInformation.append(line);
+                    currentEntry.additionalInformation.push_back('\n');
 
-                    currentScheduleType.clear();
-                    currentSchedule = Schedule();
+                    std::fstream::pos_type pos = file.tellg();
+                    if (!std::getline(file, line)) {
+                        state = ReadingStates::Id;
+                        currentCourse.schedules[currentScheduleType].entries.push_back(currentEntry);
+                        break;
+                    }
+                    trim(line);
+                    file.seekg(pos, std::ios_base::beg);
 
-                    state = ReadingStates::Id;
+                    if (line.empty() || is_number(line)) {
+                        currentCourse.schedules[currentScheduleType].entries.push_back(currentEntry);
+
+                        currentScheduleType.clear();
+                        currentEntry = Entry();
+                        state = ReadingStates::Id;
+                    }
                 }
         }
     }
 
-    if (!(state == ReadingStates::Id || state == ReadingStates::Course)) {
+    if (state != ReadingStates::Id && state != ReadingStates::Course) {
+
         throw ImporterException("File missing required lines.");
     }
 

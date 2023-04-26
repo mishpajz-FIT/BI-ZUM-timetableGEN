@@ -13,6 +13,8 @@ class FITCTUImporter: public Importer {
 
     std::ifstream file;
 
+public:
+
     FITCTUImporter(const std::string & filename);
 
     std::vector<Course> import() override;
@@ -25,8 +27,7 @@ protected:
         Type,
         Capacity,
         Time,
-        Lecturer,
-        Location
+        Additional,
     };
 
     std::map<std::string, TimeInterval::Day> dayMapping;

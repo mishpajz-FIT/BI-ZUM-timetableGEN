@@ -13,7 +13,7 @@ Evolution::Evolution(const std::vector<Course> & c):
         size_t schedIndex = 0;
 
         for (auto & sched : cour.schedules) {
-            maxValueGenome.push_back(sched.second.timeslots.size());
+            maxValueGenome.push_back(sched.second.entries.size());
 
             genomeIndexToCourse.push_back(courIndex);
             genomeIndexToSchedule.push_back(schedIndex);

@@ -8,7 +8,7 @@
 #include <string>
 
 
-struct ImporterException : public std::exception {
+struct ImporterException: public std::exception {
 
     ImporterException(std::string message);
 
