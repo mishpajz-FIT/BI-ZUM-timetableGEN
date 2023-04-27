@@ -4,7 +4,7 @@
 
 int main() {
 
-    FITCTUImporter importer("examples/example1.txt");
+    CS_FITCTUImporter importer("examples/example1.txt");
 
     std::vector<Course> result = importer.import();
 

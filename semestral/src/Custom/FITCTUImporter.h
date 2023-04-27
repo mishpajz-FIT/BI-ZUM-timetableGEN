@@ -37,5 +37,9 @@ protected:
 
 };
 
+class CS_FITCTUImporter: public FITCTUImporter {
+public:
+    CS_FITCTUImporter(const std::string & filename);
+};
 
 #endif /* FITCTUIMPORTER_H */
