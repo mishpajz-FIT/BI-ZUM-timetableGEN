@@ -1,6 +1,6 @@
 PROJECT := timetablegen
 
-CXX := g++
+CXX := g++-13
 FLAGS := -std=c++20 -O2 -Wall -pedantic
 
 BIN_DIR := bin
