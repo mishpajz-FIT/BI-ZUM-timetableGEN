@@ -7,7 +7,7 @@
 
 class TimeInterval {
 public:
-    enum class Day {
+    enum class Day : size_t {
         Monday,
         Tuesday,
         Wednesday,
@@ -35,13 +35,13 @@ public:
         bool operator >= (const TimeStamp & rhs) const;
     };
 
-private:
+    bool operator < (const TimeInterval & rhs) const;
+    bool operator > (const TimeInterval & rhs) const;
+
     enum Day day;
     TimeStamp startTime;
     TimeStamp endTime;
     enum Parity parity;
-
-public:
 
     TimeInterval(const enum Day & d, const TimeStamp & s, const TimeStamp & e,
         const Parity & p = TimeInterval::Parity::Both);

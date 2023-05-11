@@ -9,7 +9,7 @@
 #include <regex>
 #include <map>
 
-class FITCTUImporter: public Importer {
+class FITCTUImporter : public Importer {
 
     std::ifstream file;
 
@@ -17,9 +17,9 @@ public:
 
     FITCTUImporter(const std::string & filename);
 
-    std::vector<Course> import() override;
-
 protected:
+
+    Semester load() override;
 
     enum class ReadingStates {
         Course,
@@ -37,7 +37,7 @@ protected:
 
 };
 
-class CS_FITCTUImporter: public FITCTUImporter {
+class CS_FITCTUImporter : public FITCTUImporter {
 public:
     CS_FITCTUImporter(const std::string & filename);
 };

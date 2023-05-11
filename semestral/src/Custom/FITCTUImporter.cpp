@@ -1,6 +1,6 @@
 #include "FITCTUImporter.h"
 
-FITCTUImporter::FITCTUImporter(const std::string & filename):
+FITCTUImporter::FITCTUImporter(const std::string & filename) :
     Importer(),
     file(filename),
     dayMapping(),
@@ -12,16 +12,18 @@ FITCTUImporter::FITCTUImporter(const std::string & filename):
     }
 }
 
-std::vector<Course> FITCTUImporter::import() {
+#include <iostream>
 
-    std::vector<Course> result;
+Semester FITCTUImporter::load() {
+
+    Semester result;
 
     FITCTUImporter::ReadingStates state = ReadingStates::Course;
 
-    Course currentCourse;
+    std::shared_ptr<Course> currentCourse(new Course());
+    std::shared_ptr<Schedule> currentSchedule(new Schedule(currentCourse));
+    std::shared_ptr<Entry> currentEntry(new Entry(0, currentSchedule));
     bool addedCourseToResult = false;
-    std::string currentScheduleType;
-    Entry currentEntry;
 
     std::string line;
     size_t lineCount = 0;
@@ -32,10 +34,11 @@ std::vector<Course> FITCTUImporter::import() {
         if (line.empty()) {
 
             if (state == ReadingStates::Id) {
-                result.push_back(currentCourse);
+                result.coursesPtrs.push_back(currentCourse);
+                currentCourse = std::make_shared<Course>();
+                currentSchedule = std::make_shared<Schedule>(currentCourse);
+                currentEntry = std::make_shared<Entry>(0, currentSchedule);
                 addedCourseToResult = true;
-
-                currentCourse = Course();
 
                 state = ReadingStates::Course;
             }
@@ -46,13 +49,13 @@ std::vector<Course> FITCTUImporter::import() {
         switch (state) {
             case ReadingStates::Course: {
                     addedCourseToResult = false;
-                    currentCourse.name = line;
+                    currentCourse->name = line;
                     state = ReadingStates::Id;
                     break;
                 }
             case ReadingStates::Id: {
                     try {
-                        currentEntry.id = std::stoul(line);
+                        currentEntry->id = std::stoul(line);
                     }
                     catch (...) {
                         std::string exceptionMessage("Wrong format of ID in file: line ");
@@ -62,7 +65,12 @@ std::vector<Course> FITCTUImporter::import() {
                     break;
                 }
             case ReadingStates::Type: {
-                    currentScheduleType = line;
+
+                    if (!currentCourse->schedulesPtrs.contains(line)) {
+                        currentCourse->schedulesPtrs[line] = std::make_shared<Schedule>(currentCourse, line);
+                    }
+                    currentSchedule = currentCourse->schedulesPtrs[line];
+
                     state = ReadingStates::Capacity;
                     break;
                 }
@@ -71,8 +79,8 @@ std::vector<Course> FITCTUImporter::import() {
                         std::string exceptionMessage("Wrong format of capacity in file: line ");
                         throw ImporterException((exceptionMessage + std::to_string(lineCount)).c_str());
                     }
-                    currentEntry.additionalInformation.append(line);
-                    currentEntry.additionalInformation.push_back('\n');
+                    currentEntry->additionalInformation.append(line);
+                    currentEntry->additionalInformation.push_back('\n');
                     state = ReadingStates::Time;
                     break;
                 }
@@ -106,7 +114,7 @@ std::vector<Course> FITCTUImporter::import() {
                         trim(line);
                     }
 
-                    currentEntry.timeslots.emplace_back(day, start, end, parity);
+                    currentEntry->timeslots.emplace_back(day, start, end, parity);
 
                     if (std::regex_match(line, match, timeRegex)) {
                         file.seekg(pos, std::ios_base::beg);
@@ -116,8 +124,9 @@ std::vector<Course> FITCTUImporter::import() {
                     state = ReadingStates::Additional;
                 }
             case ReadingStates::Additional: {
-                    currentEntry.additionalInformation.append(line);
-                    currentEntry.additionalInformation.push_back('\n');
+                    currentEntry->additionalInformation.append(line);
+                    currentEntry->additionalInformation.push_back('\n');
+
 
                     std::fstream::pos_type pos = file.tellg();
                     bool nextLine = false;
@@ -128,10 +137,12 @@ std::vector<Course> FITCTUImporter::import() {
                     }
 
                     if (!nextLine || (line.empty() || is_number(line))) {
-                        currentCourse.schedules[currentScheduleType].entries.push_back(currentEntry);
+                        currentEntry->indexInSchedule = currentSchedule->entriesPtrs.size();
+                        currentEntry->schedule = currentSchedule;
+                        currentSchedule->entriesPtrs.push_back(currentEntry);
 
-                        currentScheduleType.clear();
-                        currentEntry = Entry();
+
+                        currentEntry = std::make_shared<Entry>(0, currentSchedule);
                         state = ReadingStates::Id;
                     }
                 }
@@ -143,13 +154,13 @@ std::vector<Course> FITCTUImporter::import() {
     }
 
     if (!addedCourseToResult) {
-        result.push_back(currentCourse);
+        result.coursesPtrs.push_back(currentCourse);
     }
 
     return result;
 }
 
-CS_FITCTUImporter::CS_FITCTUImporter(const std::string & filename): FITCTUImporter(filename) {
+CS_FITCTUImporter::CS_FITCTUImporter(const std::string & filename) : FITCTUImporter(filename) {
 
     dayMapping["po"] = TimeInterval::Day::Monday;
     dayMapping["út"] = TimeInterval::Day::Tuesday;

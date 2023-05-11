@@ -6,9 +6,9 @@
 #include <vector>
 #include <exception>
 #include <string>
+#include <algorithm>
 
-
-struct ImporterException: public std::exception {
+struct ImporterException : public std::exception {
 
     ImporterException(std::string message);
 
@@ -21,14 +21,18 @@ private:
 
 class Importer {
 
+    void calculateCollisions(Semester & semester);
+
+protected:
+    virtual Semester load() = 0;
+
 public:
     Importer() = default;
 
     virtual ~Importer() = default;
 
-    std::vector<Course> virtual import() = 0;
+    Semester import();
 
 };
-
 
 #endif /* IMPORTERS_H */

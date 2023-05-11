@@ -1,28 +1,24 @@
 #include "evolution.h"
 
-Evolution::Evolution(const std::vector<Course> & c):
-    courses(c),
-    maxValueGenome(),
-    genomeIndexToCourse(),
+Evolution::Evolution(const Semester & s, const Priorities & p) :
+    semester(s),
+    priorities(p),
+    genomeSize(0),
     genomeIndexToSchedule(),
+    courseAndScheduleToGenomeIndex(),
+    crossovers(),
     currentGeneration() {
 
+    size_t i = 0;
+    for (auto & coursePtr : s.coursesPtrs) {
+        for (auto & schedulePtr : coursePtr->schedulesPtrs) {
+            genomeIndexToSchedule.push_back(schedulePtr.second);
+            courseAndScheduleToGenomeIndex[std::make_pair(coursePtr->name, schedulePtr.first)] = i;
 
-    size_t courIndex = 0;
-    for (auto & cour : courses) {
-        size_t schedIndex = 0;
-
-        for (auto & sched : cour.schedules) {
-            maxValueGenome.push_back(sched.second.entries.size());
-
-            genomeIndexToCourse.push_back(courIndex);
-            genomeIndexToSchedule.push_back(schedIndex);
-
-            schedIndex++;
+            i++;
         }
-
-        courIndex++;
     }
+    genomeSize = i;
 
     crossovers.emplace_back(new SimpleCrossover());
 }
@@ -31,8 +27,6 @@ std::vector<std::map<Course, std::map<std::string, uint32_t>>>
 Evolution::evolve(size_t generationSize, size_t maxGenerations) {
 
     createInitialGenerations(generationSize);
-
-    size_t genomeSize = maxValueGenome.size();
 
     for (size_t gen = 0; gen < maxGenerations; gen++) {
         // TODO: evolve
@@ -54,16 +48,19 @@ Evolution::evolve(size_t generationSize, size_t maxGenerations) {
 
 }
 
+double Evolution::fitness(const Genome & genome) {
+    std::vector<>
+}
+
 void Evolution::createInitialGenerations(size_t generationSize) {
     currentGeneration.clear();
-
-    size_t genomeSize = maxValueGenome.size();
 
     for (size_t i = 0; i < generationSize; i++) {
         Genome newGenome;
 
         for (size_t j = 0; j < genomeSize; j++) {
-            newGenome.push_back(randomNumber(maxValueGenome[j]));
+            size_t maxValue = genomeIndexToSchedule[j]->entriesPtrs.size();
+            newGenome.push_back(randomNumber(maxValue));
         }
     }
 }

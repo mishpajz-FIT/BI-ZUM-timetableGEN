@@ -3,22 +3,27 @@
 
 #include "Data/subjects.h"
 #include "Evolution/crossover.h"
+#include "Evolution/priorities.h"
 
 #include <vector>
 #include <tuple>
-#include <unordered_map>
+#include <map>
 #include <string>
 #include <memory>
+#include <algorithm>
 
 using Genome = std::vector<uint32_t>;
 
+using EntryAddress = std::pair<std::string, std::string>; // course and schedule name
+
 class Evolution {
 
-    const std::vector<Course> courses;
+    Semester semester;
+    Priorities priorities;
 
-    Genome maxValueGenome;
-    std::vector<size_t> genomeIndexToCourse;
-    std::vector<size_t> genomeIndexToSchedule;
+    size_t genomeSize;
+    std::vector<std::shared_ptr<Schedule>> genomeIndexToSchedule;
+    std::map<EntryAddress, size_t> courseAndScheduleToGenomeIndex;
 
     std::vector<std::unique_ptr<Crossover>> crossovers;
 
@@ -26,13 +31,15 @@ class Evolution {
 
 public:
 
-    Evolution(const std::vector<Course> & c);
+    Evolution(const Semester & s, const Priorities & p);
 
     ~Evolution() = default;
 
     std::vector<std::map<Course, std::map<std::string, uint32_t>>> evolve(size_t generationSize = 100, size_t maxGenerations = 100);
 
 private:
+
+    double fitness(const Genome & genome);
 
     void createInitialGenerations(size_t generationSize);
 
