@@ -4,10 +4,11 @@
 #include <cstdint>
 
 struct Priorities {
-    bool keepTogether;
 
-    bool enabledPenaliseBeforeTime;
-    uint8_t penaliseBeforeTime;
+    bool keepCoherentInDay;
+    bool keepCoherentInWeek;
+
+    uint8_t penaliseBeforeHour;
 
 };
 
