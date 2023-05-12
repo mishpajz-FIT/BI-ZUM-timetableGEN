@@ -2,6 +2,7 @@
 #define PRIORITIES_H
 
 #include <cstdint>
+#include <algorithm>
 
 struct Priorities {
 
@@ -9,6 +10,21 @@ struct Priorities {
     bool keepCoherentInWeek;
 
     uint8_t penaliseBeforeHour;
+
+};
+
+struct Scores {
+    double coherentInDay;
+    double coherentInWeek;
+    double collisions;
+    double earlyHours;
+    double bonuses;
+
+    Scores();
+
+    void setToMinValuesFrom(const Scores & s);
+
+    void setToMaxValuesFrom(const Scores & s);
 
 };
 

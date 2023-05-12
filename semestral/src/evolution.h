@@ -11,6 +11,7 @@
 #include <string>
 #include <memory>
 #include <algorithm>
+#include <iostream>
 
 using Genome = std::vector<uint32_t>;
 
@@ -27,21 +28,25 @@ class Evolution {
 
     std::vector<std::unique_ptr<Crossover>> crossovers;
 
-    std::vector<Genome> currentGeneration;
-
 public:
+
+    Evolution() = delete;
 
     Evolution(const Semester & s, const Priorities & p);
 
     ~Evolution() = default;
 
-    std::vector<std::map<Course, std::map<std::string, uint32_t>>> evolve(size_t generationSize = 100, size_t maxGenerations = 100);
+    std::vector<std::pair<EntryAddress, std::shared_ptr<Entry>>> evolve(size_t generationSize = 100, size_t maxGenerations = 100, bool verbal = true);
 
 private:
 
-    double fitness(const Genome & genome);
+    void selection(std::vector<Genome> & newGeneration, size_t generationSize);
 
-    void createInitialGenerations(size_t generationSize);
+    double fitness(const Scores & genomeScore, const Scores & minValues, const Scores & maxValues);
+
+    Scores score(const Genome & genome);
+
+    std::vector<Genome> createInitialGenerations(size_t generationSize) const;
 
     static size_t randomNumber(size_t maxValue);
 

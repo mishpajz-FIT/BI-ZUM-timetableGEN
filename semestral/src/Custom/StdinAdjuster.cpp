@@ -2,9 +2,6 @@
 
 Priorities StdinAdjuster::operator()(const Semester & Semester) {
     Priorities result;
-
-    result.keepTogether = true;
-    result.enabledPenaliseBeforeTime = false;
-
+    // TODO
     return result;
 }
