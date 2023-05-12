@@ -1,6 +1,6 @@
-#include "FITCTUImporter.h"
+#include "FITCTUFileImporter.h"
 
-FITCTUImporter::FITCTUImporter(const std::string & filename) :
+FITCTUFileImporter::FITCTUFileImporter(const std::string & filename):
     Importer(),
     file(filename),
     dayMapping(),
@@ -12,13 +12,11 @@ FITCTUImporter::FITCTUImporter(const std::string & filename) :
     }
 }
 
-#include <iostream>
-
-Semester FITCTUImporter::load() {
+Semester FITCTUFileImporter::load() {
 
     Semester result;
 
-    FITCTUImporter::ReadingStates state = ReadingStates::Course;
+    FITCTUFileImporter::ReadingStates state = ReadingStates::Course;
 
     std::shared_ptr<Course> currentCourse(new Course());
     std::shared_ptr<Schedule> currentSchedule(new Schedule(currentCourse));
@@ -160,7 +158,7 @@ Semester FITCTUImporter::load() {
     return result;
 }
 
-CS_FITCTUImporter::CS_FITCTUImporter(const std::string & filename) : FITCTUImporter(filename) {
+CS_FITCTUFileImporter::CS_FITCTUFileImporter(const std::string & filename): FITCTUFileImporter(filename) {
 
     dayMapping["po"] = TimeInterval::Day::Monday;
     dayMapping["út"] = TimeInterval::Day::Tuesday;

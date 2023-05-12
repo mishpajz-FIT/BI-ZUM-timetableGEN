@@ -13,9 +13,9 @@
 #include <algorithm>
 #include <iostream>
 
-using Genome = std::vector<uint32_t>;
-
 using EntryAddress = std::pair<std::string, std::string>; // course and schedule name
+
+using EvolutionResult = std::pair<EntryAddress, std::shared_ptr<Entry>>;
 
 class Evolution {
 
@@ -36,7 +36,7 @@ public:
 
     ~Evolution() = default;
 
-    std::vector<std::pair<EntryAddress, std::shared_ptr<Entry>>> evolve(size_t generationSize = 100, size_t maxGenerations = 100, bool verbal = true);
+    std::vector<EvolutionResult> evolve(size_t generationSize = 100, size_t maxGenerations = 100, bool verbal = true);
 
 private:
 

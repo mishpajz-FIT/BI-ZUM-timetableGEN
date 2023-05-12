@@ -1,5 +1,5 @@
-#ifndef FITCTUIMPORTER_H
-#define FITCTUIMPORTER_H
+#ifndef FITCTUFILEIMPORTER_H
+#define FITCTUFILEIMPORTER_H
 
 #include "Utility/importers.h"
 #include "Extensions/string_extensions.h"
@@ -9,13 +9,13 @@
 #include <regex>
 #include <map>
 
-class FITCTUImporter : public Importer {
+class FITCTUFileImporter: public Importer {
 
     std::ifstream file;
 
 public:
 
-    FITCTUImporter(const std::string & filename);
+    FITCTUFileImporter(const std::string & filename);
 
 protected:
 
@@ -37,9 +37,9 @@ protected:
 
 };
 
-class CS_FITCTUImporter : public FITCTUImporter {
+class CS_FITCTUFileImporter: public FITCTUFileImporter {
 public:
-    CS_FITCTUImporter(const std::string & filename);
+    CS_FITCTUFileImporter(const std::string & filename);
 };
 
-#endif /* FITCTUIMPORTER_H */
+#endif /* FITCTUFILEIMPORTER_H */

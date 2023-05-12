@@ -22,8 +22,7 @@ Evolution::Evolution(const Semester & s, const Priorities & p):
     crossovers.emplace_back(new SimpleCrossover());
 }
 
-std::vector<std::pair<EntryAddress, std::shared_ptr<Entry>>>
-Evolution::evolve(size_t generationSize, size_t maxGenerations, bool verbal) {
+std::vector<EvolutionResult> Evolution::evolve(size_t generationSize, size_t maxGenerations, bool verbal) {
 
     std::vector<Genome> currentGeneration;
 

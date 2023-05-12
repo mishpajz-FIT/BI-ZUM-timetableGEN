@@ -20,9 +20,6 @@ private:
 };
 
 class Importer {
-
-    void calculateCollisions(Semester & semester);
-
 protected:
     virtual Semester load() = 0;
 
