@@ -2,6 +2,6 @@
 
 Priorities StdinAdjuster::operator()(const Semester & Semester) {
     Priorities result;
-    // TODO
+    // TODO: Load priorities
     return result;
 }

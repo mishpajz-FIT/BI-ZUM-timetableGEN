@@ -1,6 +1,10 @@
 #include "evolution.h"
 
-#define PROGRESS_BAR_WIDTH 50
+#define EVOLUTION_PROGRESS_BAR_WIDTH 50
+
+#define EVOLUTION_POINT_CROSSOVER_DIVIDER 4
+#define EVOLUTION_MUTATION_ONE_IN 2
+#define EVOLUTION_MUTATION_DIVIDER 10
 
 Evolution::Evolution(const Semester & s, const Priorities & p) :
     semester(s),
@@ -21,7 +25,11 @@ Evolution::Evolution(const Semester & s, const Priorities & p) :
     }
     genomeSize = i;
 
-    crossovers.emplace_back(new SimpleCrossover());
+    crossovers.emplace_back(new UniformCrossover());
+    crossovers.emplace_back(new PointCrossover(1));
+    for (size_t i = 2; i <= (genomeSize / EVOLUTION_POINT_CROSSOVER_DIVIDER); i++) {
+        crossovers.emplace_back(new PointCrossover(i));
+    }
 }
 
 std::vector<EvolutionResult> Evolution::evolve(size_t generationSize, size_t maxGenerations, bool verbal) {
@@ -45,11 +53,16 @@ std::vector<EvolutionResult> Evolution::evolve(size_t generationSize, size_t max
             size_t lParentIndex = randomNumber(genomeSize);
             size_t rParentIndex = randomNumber(genomeSize);
 
-            Genome child = crossovers[0]->perform(currentGeneration[lParentIndex], currentGeneration[rParentIndex]);
-            // TODO: Crossovers
+
+            size_t crossoverIndex = randomNumber(crossovers.size());
+            Crossover * crossover = crossovers[crossoverIndex].get();
+            Genome child = crossover->perform(currentGeneration[lParentIndex], currentGeneration[rParentIndex]);
 
 
-            // TODO: Mutations
+            mutate(child);
+            for (size_t i = 1; i <= (genomeSize / EVOLUTION_MUTATION_DIVIDER); i++) {
+                mutate(child);
+            }
 
             newGeneration.emplace_back(child);
         }
@@ -126,7 +139,6 @@ double Evolution::fitness(const Scores & genomeScore, const Scores & minValues, 
     // TODO: Rest of the coherences
 }
 
-
 Scores Evolution::score(const Genome & genome) {
 
     // Get all intervals and sort them by start time
@@ -182,6 +194,18 @@ Scores Evolution::score(const Genome & genome) {
     return result;
 }
 
+bool Evolution::mutate(Genome & genome) {
+    size_t flag = randomNumber(EVOLUTION_MUTATION_ONE_IN);
+    if (flag != 0) {
+        return false;
+    }
+
+    size_t randomIndex = randomNumber(genomeSize);
+    size_t maxValueOnIndex = genomeIndexToSchedule[randomIndex]->entriesPtrs.size();
+    genome[randomIndex] = randomNumber(maxValueOnIndex);
+    return true;
+}
+
 std::vector<Genome> Evolution::createInitialGenerations(size_t generationSize) const {
 
     std::vector<Genome> result;
@@ -202,10 +226,10 @@ std::vector<Genome> Evolution::createInitialGenerations(size_t generationSize) c
 
 void Evolution::loadingBar(std::ostream & stream, size_t value, size_t maxValue) const {
     size_t percentage = (value * 100) / maxValue;
-    size_t position = (PROGRESS_BAR_WIDTH * percentage) / 100;
+    size_t position = (EVOLUTION_PROGRESS_BAR_WIDTH * percentage) / 100;
 
     stream << "[";
-    for (size_t i = 0; i < PROGRESS_BAR_WIDTH; i++) {
+    for (size_t i = 0; i < EVOLUTION_PROGRESS_BAR_WIDTH; i++) {
         if (i < position) {
             stream << "#";
         } else {

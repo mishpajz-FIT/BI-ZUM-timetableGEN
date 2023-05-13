@@ -8,6 +8,7 @@
 
 int main() {
 
+    //TODO: Control menu
     CS_FITCTUFileImporter importer("examples/example1.txt");
     Semester semester = importer.import();
 

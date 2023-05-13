@@ -2,7 +2,7 @@
 #define EVOLUTION_H
 
 #include "Data/subjects.h"
-#include "Evolution/crossover.h"
+#include "Evolution/crossovers.h"
 #include "Evolution/priorities.h"
 
 #include <vector>
@@ -45,6 +45,8 @@ private:
     double fitness(const Scores & genomeScore, const Scores & minValues, const Scores & maxValues);
 
     Scores score(const Genome & genome);
+
+    bool mutate(Genome & genome);
 
     std::vector<Genome> createInitialGenerations(size_t generationSize) const;
 
