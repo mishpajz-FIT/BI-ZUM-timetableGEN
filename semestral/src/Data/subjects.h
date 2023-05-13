@@ -21,6 +21,8 @@ private:
         bool operator()(const std::weak_ptr<Entry> & lhs, const std::weak_ptr<Entry> & rhs) const;
     };
 
+    double bonus;
+
 public:
     uint32_t id;
     std::string additionalInformation;
@@ -31,8 +33,10 @@ public:
     std::weak_ptr<Schedule> schedule;
     size_t indexInSchedule;
 
-    Entry(size_t ix, const std::weak_ptr<Schedule> & parent, uint32_t id = 0);
+    double getBonus() const;
+    void setBonus(double value);
 
+    Entry(size_t ix, const std::weak_ptr<Schedule> & parent, uint32_t id = 0);
 };
 
 struct Schedule {
@@ -40,9 +44,11 @@ struct Schedule {
     std::vector<std::shared_ptr<Entry>> entriesPtrs;
 
     std::weak_ptr<Course> course;
+    
+    bool ignored;
+    
     Schedule(const std::weak_ptr<Course> & parent);
     Schedule(const std::weak_ptr<Course> & parent, const std::string & name);
-
 };
 
 struct Course {

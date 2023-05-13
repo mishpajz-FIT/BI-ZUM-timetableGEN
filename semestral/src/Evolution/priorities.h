@@ -10,6 +10,12 @@ struct Priorities {
     bool keepCoherentInWeek;
 
     uint8_t penaliseBeforeHour;
+    uint8_t penaliseHoursTogether;
+    uint8_t penaliseAfterHour;
+
+    unsigned int minutesToBeConsecutive;
+
+    Priorities();
 
 };
 
@@ -17,7 +23,7 @@ struct Scores {
     double coherentInDay;
     double coherentInWeek;
     double collisions;
-    double earlyHours;
+    double wrongHours;
     double bonuses;
 
     Scores();

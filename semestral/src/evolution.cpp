@@ -20,6 +20,7 @@ Evolution::Evolution(const Semester & s, const Priorities & p) :
             genomeIndexToSchedule.push_back(schedulePtr.second);
             courseAndScheduleToGenomeIndex[std::make_pair(coursePtr->name, schedulePtr.first)] = i;
 
+
             i++;
         }
     }

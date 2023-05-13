@@ -1,7 +1,347 @@
 #include "StdinAdjuster.h"
 
-Priorities StdinAdjuster::operator()(const Semester & Semester) {
+bool StdinAdjuster::checkInputForFail() {
+    if (std::cin.fail()) {
+        std::cin.clear(); // Clean stdin for next tries
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        std::cout << "\033[1;1H\033[2J" << std::endl; // Clean console
+        std::cout << "(!) Wrong input.\n";
+        return true;
+    }
+    return false;
+}
+
+void StdinAdjuster::adjustBool(const std::string & infoText, bool & value) {
+    bool active = true;
+    std::cout << "\033[1;1H\033[2J" << std::endl; // Clean console
+    while (active) {
+        char choice;
+        std::cout << infoText << "\n\n";
+        std::cout << "Current value: [" << std::boolalpha << value << "]\n";
+        std::cout << "Enter new value (y/n) or 'q' to exit: \n";
+        std::cout << std::string(STDIN_ADJUSTER_SEPARATOR_LENGTH, '_') << std::endl;
+        std::cin >> choice;
+
+        if (checkInputForFail()) {
+            continue;
+        }
+
+        std::cout << "\033[1;1H\033[2J" << std::endl; // Clean console
+        switch (choice) {
+            case 'y':
+            case 'Y':
+            case '1':
+                value = true;
+                continue;
+            case 'n':
+            case 'N':
+            case '0':
+                value = false;
+                continue;
+            case 'q':
+            case 'Q':
+                active = false;
+                break;
+            default:
+                std::cout << "(!) Wrong input.\n";
+                continue;
+        }
+    }
+}
+
+void StdinAdjuster::adjustTime(const std::string & infoText, uint8_t & value) {
+    std::cout << "\033[1;1H\033[2J" << std::endl; // Clean console
+    while (true) {
+        std::string newValueString;
+        std::cout << infoText << "\n\n";
+        std::cout << "Current value: [" << std::setw(2) << std::setfill('0') << static_cast<int>(value) << "]\n";
+        std::cout << "Enter new value (0 to disable) or 'q' to exit: \n";
+        std::cout << std::string(STDIN_ADJUSTER_SEPARATOR_LENGTH, '_') << std::endl;
+        std::cin >> newValueString;
+
+        if (checkInputForFail()) {
+            continue;
+        }
+
+        trim(newValueString);
+        std::istringstream inputstringstream(newValueString);
+
+        unsigned int newValue;
+        char choice;
+
+        if (inputstringstream >> newValue) {
+            if (newValue >= 24) {
+                newValue = 24;
+            }
+
+            value = static_cast<uint8_t>(newValue);
+            std::cout << "\033[1;1H\033[2J" << std::endl; // Clean console
+            continue;
+        }
+
+        inputstringstream.clear();
+        if ((inputstringstream >> choice) && (choice == 'q' || choice == 'Q')) {
+            return;
+        }
+
+        std::cout << "\033[1;1H\033[2J" << std::endl; // Clean console
+    }
+}
+
+template <typename T>
+void StdinAdjuster::adjustValue(const std::string & infoText, T & value) {
+    std::cout << "\033[1;1H\033[2J" << std::endl; // Clean console
+    while (true) {
+        std::string newValueString;
+        std::cout << infoText << "\n\n";
+        std::cout << "Current value: [" << value << "]\n";
+        std::cout << "Enter new value or 'q' to exit: \n";
+        std::cout << std::string(STDIN_ADJUSTER_SEPARATOR_LENGTH, '_') << std::endl;
+        std::cin >> newValueString;
+
+        if (checkInputForFail()) {
+            continue;
+        }
+
+        trim(newValueString);
+        std::istringstream inputstringstream(newValueString);
+
+        T retrievedValue;
+        char choice;
+
+        if (inputstringstream >> retrievedValue) {
+            value = retrievedValue;
+            std::cout << "\033[1;1H\033[2J" << std::endl; // Clean console
+            continue;
+        }
+
+        inputstringstream.clear();
+        if ((inputstringstream >> choice) && (choice == 'q' || choice == 'Q')) {
+            return;
+        }
+        std::cout << "\033[1;1H\033[2J" << std::endl; // Clean console
+        std::cout << "(!) Wrong input.\n";
+    }
+}
+
+std::pair<std::shared_ptr<Course>, StdinAdjuster::ReturnStatus>
+StdinAdjuster::retrieveCourse(Semester & semester) {
+    std::cout << "\nChoose a course to adjust:\n";
+    for (size_t i = 0; i < semester.coursesPtrs.size(); i++) {
+        std::cout << "\t" << i + 1 << ") " << semester.coursesPtrs[i]->name << "\n";
+    }
+    std::cout << "or '0' to exit.\n";
+    std::cout << std::string(STDIN_ADJUSTER_SEPARATOR_LENGTH, '_') << std::endl;
+
+    unsigned int courseChoice;
+    std::cin >> courseChoice;
+
+    if (checkInputForFail()) {
+        return std::make_pair(nullptr, StdinAdjuster::ReturnStatus::BAD);
+    }
+
+    if (courseChoice == 0) {
+        return std::make_pair(nullptr, StdinAdjuster::ReturnStatus::QUIT);
+    }
+
+    courseChoice -= 1;
+    if (courseChoice >= semester.coursesPtrs.size()) {
+        std::cout << "\033[1;1H\033[2J" << std::endl; // Clean console
+        std::cout << "(!) Unknown choice.\n";
+        return std::make_pair(nullptr, StdinAdjuster::ReturnStatus::BAD);
+    }
+
+    return std::make_pair(semester.coursesPtrs[courseChoice], StdinAdjuster::ReturnStatus::GOOD);
+}
+
+std::pair<std::shared_ptr<Schedule>, StdinAdjuster::ReturnStatus>
+StdinAdjuster::retrieveSchedule(std::shared_ptr<Course> & course) {
+    std::cout << "\nChoose a schedule to adjust:\n";
+    for (auto & schedule : course->schedulesPtrs) {
+        std::cout << "\t" << schedule.first << "\n";
+    }
+    std::cout << "or anything else to exit.\n";
+    std::cout << std::string(STDIN_ADJUSTER_SEPARATOR_LENGTH, '_') << std::endl;
+
+    std::string scheduleChoice;
+    std::cin >> scheduleChoice;
+
+    if (checkInputForFail()) {
+        return std::make_pair(nullptr, StdinAdjuster::ReturnStatus::BAD);
+    }
+
+    if (!course->schedulesPtrs.contains(scheduleChoice)) {
+        std::cout << "\033[1;1H\033[2J" << std::endl; // Clean console
+        std::cout << "(!) Unknown choice.\n";
+        return std::make_pair(nullptr, StdinAdjuster::ReturnStatus::BAD);
+    }
+
+    return std::make_pair(course->schedulesPtrs[scheduleChoice], StdinAdjuster::ReturnStatus::GOOD);
+}
+
+std::pair<std::shared_ptr<Entry>, StdinAdjuster::ReturnStatus>
+StdinAdjuster::retrieveEntry(std::shared_ptr<Schedule> & schedule) {
+    std::cout << "Choose a entry to adjust:\n";
+    for (size_t i = 0; i < schedule->entriesPtrs.size(); i++) {
+        std::cout << "\t" << i + 1 << ") id: " << schedule->entriesPtrs[i]->id << "\n";
+    }
+    std::cout << "or anything else to exit.\n";
+    std::cout << std::string(STDIN_ADJUSTER_SEPARATOR_LENGTH, '_') << std::endl;
+
+    unsigned int entryChoice;
+    std::cin >> entryChoice;
+
+    if (checkInputForFail()) {
+        return std::make_pair(nullptr, StdinAdjuster::ReturnStatus::BAD);
+    }
+
+    entryChoice -= 1;
+    if (entryChoice >= schedule->entriesPtrs.size()) {
+        std::cout << "\033[1;1H\033[2J" << std::endl; // Clean console
+        std::cout << "(!) Unknown choice.\n";
+        return std::make_pair(nullptr, StdinAdjuster::ReturnStatus::BAD);
+    }
+
+    return std::make_pair(schedule->entriesPtrs[entryChoice], StdinAdjuster::ReturnStatus::GOOD);
+}
+
+void StdinAdjuster::adjustBonuses(Semester & semester) {
+    std::cout << "\033[1;1H\033[2J" << std::endl; // Clean console
+    while (true) {
+        std::cout << "Specify entries that should be prioritized or deprioritized in the timetable generation:\n";
+        std::pair<std::shared_ptr<Course>, StdinAdjuster::ReturnStatus> course = retrieveCourse(semester);
+        if (course.second == StdinAdjuster::ReturnStatus::QUIT) {
+            break;
+        } else if (course.second == StdinAdjuster::ReturnStatus::BAD) {
+            continue;
+        }
+
+        std::pair<std::shared_ptr<Schedule>, StdinAdjuster::ReturnStatus> schedule = retrieveSchedule(course.first);
+        if (schedule.second != StdinAdjuster::ReturnStatus::GOOD) {
+            continue;
+        }
+
+        std::pair<std::shared_ptr<Entry>, StdinAdjuster::ReturnStatus> entry = retrieveEntry(schedule.first);
+        if (schedule.second != StdinAdjuster::ReturnStatus::GOOD) {
+            continue;
+        }
+
+        std::cout << "\033[1;1H\033[2J" << std::endl; // Clean console
+        while (true) {
+            std::string newValueString;
+            std::cout << "Enter bonus (or malus) score in range -10 to +10 for a given entry." << "\n\n";
+            std::cout << "Current value: [" << entry.first->getBonus() << "]\n";
+            std::cout << "Enter new value or 'q' to exit: \n";
+            std::cout << std::string(STDIN_ADJUSTER_SEPARATOR_LENGTH, '_') << std::endl;
+            std::cin >> newValueString;
+
+            if (checkInputForFail()) {
+                continue;
+            }
+
+            trim(newValueString);
+            std::istringstream inputstringstream(newValueString);
+
+            double value;
+            char choice;
+
+            if (inputstringstream >> value) {
+                entry.first->setBonus(value);
+                std::cout << "\033[1;1H\033[2J" << std::endl; // Clean console
+                continue;
+            }
+
+            inputstringstream.clear();
+            if ((inputstringstream >> choice) && (choice == 'q' || choice == 'Q')) {
+                std::cout << "\033[1;1H\033[2J" << std::endl; // Clean console
+                break;
+            }
+            std::cout << "\033[1;1H\033[2J" << std::endl; // Clean console
+            std::cout << "(!) Wrong input.\n";
+        }
+    }
+}
+
+void StdinAdjuster::adjustIgnored(Semester & semester) {
+    std::cout << "\033[1;1H\033[2J" << std::endl; // Clean console
+    while (true) {
+        std::cout << "Specify schedules that should not be considered in the timetable generation.\n";
+        std::pair<std::shared_ptr<Course>, StdinAdjuster::ReturnStatus> course = retrieveCourse(semester);
+        if (course.second == StdinAdjuster::ReturnStatus::QUIT) {
+            break;
+        } else if (course.second == StdinAdjuster::ReturnStatus::BAD) {
+            continue;
+        }
+
+        std::pair<std::shared_ptr<Schedule>, StdinAdjuster::ReturnStatus> schedule = retrieveSchedule(course.first);
+        if (schedule.second != StdinAdjuster::ReturnStatus::GOOD) {
+            continue;
+        }
+
+        adjustBool("Set whether this schedule will be ignored when generating timetable. (It will still be included in the generated timetable, but will be ignored for detecting collisions, continuation and bonuses.)",
+            schedule.first->ignored);
+    }
+}
+
+Priorities StdinAdjuster::operator()(Semester & semester) {
     Priorities result;
-    // TODO: Load priorities
+
+    bool active = true;
+    while (active) {
+        std::cout << "\033[1;1H\033[2J" << std::endl; // Clean console
+
+        char choice;
+        std::cout << "Choose a setting to adjust:\n";
+        std::cout << "\t1) Keep entries continuous in a day.\n";
+        std::cout << "\t2) Keep entries continuous in a week.\n";
+        std::cout << "\t3) Maximum preferred consecutive hours.\n";
+        std::cout << "\t4) Maximum interval such that entries count as consecutive.\n";
+        std::cout << "\t5) Earliest preferred start hour in a day.\n";
+        std::cout << "\t6) Latest preffered start hour in a day.\n";
+        std::cout << "\t7) Ignore scheduling for entries.\n";
+        std::cout << "\t8) Set priority of specific entries.\n";
+        std::cout << "or 'q' to exit.\n";
+        std::cout << std::string(STDIN_ADJUSTER_SEPARATOR_LENGTH, '=') << std::endl;
+        std::cin >> choice;
+
+        switch (choice) {
+            case '1':
+                adjustBool("All entries within a single day are preferred to be scheduled back-to-back with the least time gaps between them.",
+                    result.keepCoherentInDay);
+                continue;
+            case '2':
+                adjustBool("All scheduled days are preferred to be scheduled back-to-back without empty days between them.",
+                    result.keepCoherentInWeek);
+                continue;
+            case '3':
+                adjustTime("Maximum amount of hours that are preferred to be scheduled consecutively back-to-back.",
+                    result.penaliseHoursTogether);
+                continue;
+            case '4':
+                adjustValue<unsigned int>("Maximum amount of minutes that can pass between two entries for them to still be considered consecutive.",
+                    result.minutesToBeConsecutive);
+                continue;
+            case '5':
+                adjustTime("Earliest preferred hour of day after which schedule should ideally should begin.",
+                    result.penaliseBeforeHour);
+                continue;
+            case '6':
+                adjustTime("Latest preferred hour of day after which ideally no entries should begin.",
+                    result.penaliseAfterHour);
+                continue;
+            case '7':
+                adjustIgnored(semester);
+                continue;
+            case '8':
+                adjustBonuses(semester);
+                continue;
+            case 'q':
+                active = false;
+                break;
+            default:
+                continue;
+        }
+    }
+
     return result;
 }

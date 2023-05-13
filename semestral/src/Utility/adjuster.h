@@ -6,7 +6,7 @@
 
 class Adjuster {
 public:
-    virtual Priorities operator ()(const Semester & semester) = 0;
+    virtual Priorities operator ()(Semester & semester) = 0;
 };
 
 #endif /* ADJUSTER_H */

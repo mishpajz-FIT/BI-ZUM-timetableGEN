@@ -70,9 +70,9 @@ void StdoutOutputter::output(const std::vector<EvolutionResult> & result) {
         std::cout << std::setw(2) << std::setfill('0') << static_cast<int>(interval.endTime.hour) << ":";
         std::cout << std::setw(2) << std::setfill('0') << static_cast<int>(interval.endTime.minute) << "\n";
         if (interval.parity == TimeInterval::Parity::Odd) {
-            std::cout << parityName << ": " << parityOdd;
+            std::cout << parityName << ": " << parityOdd << "\n";
         } else if (interval.parity == TimeInterval::Parity::Even) {
-            std::cout << parityName << ": " << parityEven;
+            std::cout << parityName << ": " << parityEven << "\n";
         }
         std::cout << "\n";
         std::cout << entry->id << "\n";
@@ -84,7 +84,7 @@ void StdoutOutputter::output(const std::vector<EvolutionResult> & result) {
 }
 
 
-CS_StdoutOutputter::CS_StdoutOutputter(): StdoutOutputter() {
+CS_StdoutOutputter::CS_StdoutOutputter() : StdoutOutputter() {
     namesOfDays[0] = "pondělí";
     namesOfDays[1] = "útery";
     namesOfDays[2] = "středa";
