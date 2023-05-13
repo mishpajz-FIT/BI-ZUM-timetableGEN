@@ -63,7 +63,7 @@ void evolve(std::string & logo, Semester & semester, Priorities & priorities) {
     std::cout << "\033[1;1H\033[2J" << std::endl; // Clean console
     std::cout << logo << std::endl;
     Evolution evolution(semester, priorities);
-    std::vector<EvolutionResult> result = evolution.evolve();
+    std::vector<EvolutionResult> result = evolution.evolve(150, 300);
 
     std::cout << "\033[1;1H\033[2J" << std::endl; // Clean console
     std::cout << logo << std::endl;

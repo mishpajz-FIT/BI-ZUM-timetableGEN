@@ -55,7 +55,7 @@ void StdinAdjuster::adjustTime(const std::string & infoText, uint8_t & value) {
         std::string newValueString;
         std::cout << infoText << "\n\n";
         std::cout << "Current value: [" << std::setw(2) << std::setfill('0') << static_cast<int>(value) << "]\n";
-        std::cout << "Enter new value (0 to disable) or 'q' to exit: \n";
+        std::cout << "Enter new value in 24h format (0 to disable) or 'q' to exit: \n";
         std::cout << std::string(STDIN_ADJUSTER_SEPARATOR_LENGTH, '_') << std::endl;
         std::cin >> newValueString;
 
@@ -297,7 +297,7 @@ Priorities StdinAdjuster::operator()(Semester & semester) {
         std::cout << "\t3) Maximum preferred consecutive hours.\n";
         std::cout << "\t4) Maximum interval such that entries count as consecutive.\n";
         std::cout << "\t5) Earliest preferred start hour in a day.\n";
-        std::cout << "\t6) Latest preffered start hour in a day.\n";
+        std::cout << "\t6) Latest preferred start hour in a day.\n";
         std::cout << "\t7) Ignore scheduling for entries.\n";
         std::cout << "\t8) Set priority of specific entries.\n";
         std::cout << "or 'q' to exit.\n";
@@ -315,7 +315,7 @@ Priorities StdinAdjuster::operator()(Semester & semester) {
                 continue;
             case '3':
                 adjustTime("Maximum amount of hours that are preferred to be scheduled consecutively back-to-back.",
-                    result.penaliseHoursTogether);
+                    result.penaliseManyConsecutiveHours);
                 continue;
             case '4':
                 adjustValue<unsigned int>("Maximum amount of minutes that can pass between two entries for them to still be considered consecutive.",

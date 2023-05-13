@@ -2,9 +2,9 @@
 
 #define EVOLUTION_PROGRESS_BAR_WIDTH 50
 
-#define EVOLUTION_POINT_CROSSOVER_DIVIDER 4
-#define EVOLUTION_MUTATION_ONE_IN 2
-#define EVOLUTION_MUTATION_DIVIDER 10
+#define EVOLUTION_POINT_CROSSOVER_DIVIDER 10
+#define EVOLUTION_MUTATION_ONE_IN 3
+#define EVOLUTION_MUTATION_DIVIDER 25
 
 Evolution::Evolution(const Semester & s, const Priorities & p) :
     semester(s),
@@ -19,7 +19,6 @@ Evolution::Evolution(const Semester & s, const Priorities & p) :
         for (auto & schedulePtr : coursePtr->schedulesPtrs) {
             genomeIndexToSchedule.push_back(schedulePtr.second);
             courseAndScheduleToGenomeIndex[std::make_pair(coursePtr->name, schedulePtr.first)] = i;
-
 
             i++;
         }
@@ -106,7 +105,7 @@ void Evolution::selection(std::vector<Genome> & newGeneration, size_t generation
     using GenomeFitness = std::pair<Genome, double>;
     std::vector<GenomeFitness> fitnessedGenomes;
     for (auto it = scoredGenomes.begin(); it != scoredGenomes.end(); it++) {
-        fitnessedGenomes.emplace_back(std::make_pair(it->first, fitness(it->second, minValues, maxValues)));
+        fitnessedGenomes.emplace_back(std::make_pair(it->first, it->second.convertScoreToFitness(minValues, maxValues)));
     }
 
     std::sort(fitnessedGenomes.begin(), fitnessedGenomes.end(), [ ] (const GenomeFitness & lhs, const GenomeFitness & rhs) -> bool {
@@ -124,20 +123,6 @@ void Evolution::selection(std::vector<Genome> & newGeneration, size_t generation
     }
 
     std::swap(newGeneration, result);
-}
-
-double Evolution::fitness(const Scores & genomeScore, const Scores & minValues, const Scores & maxValues) {
-    double result = 0;
-
-#define inverseScoring(val) (10 - 9 * ((genomeScore.val - minValues.val) / (maxValues.val - minValues.val)));
-
-    result += inverseScoring(coherentInDay);
-    result += inverseScoring(coherentInWeek);
-    result += inverseScoring(collisions);
-
-    return result;
-
-    // TODO: Rest of the coherences
 }
 
 Scores Evolution::score(const Genome & genome) {
@@ -160,38 +145,7 @@ Scores Evolution::score(const Genome & genome) {
 
 
     Scores result;
-
-
-    for (auto it = intervals.begin(); it != intervals.end(); it++) {
-
-        // Day coherence score
-        auto next = it + 1;
-        if (next != intervals.end() && it->first.day == next->first.day) {
-            result.coherentInDay += (next->first.startTime.valueInMinutes() - it->first.endTime.valueInMinutes());
-        }
-
-
-        // Collision score
-        auto collisionIt = it + 1;
-        while (collisionIt != intervals.end()
-            && ((collisionIt->first.startTime < it->first.endTime) && (it->first.day == collisionIt->first.day))) {
-
-            if (it->first.parity == collisionIt->first.parity
-                || (it->first.parity == TimeInterval::Parity::Both || collisionIt->first.parity == TimeInterval::Parity::Both)) {
-
-                result.collisions++;
-            }
-
-            collisionIt++;
-        }
-
-    }
-
-    // Week coherence score
-    result.coherentInWeek = static_cast<size_t>(intervals.back().first.day) - static_cast<size_t>(intervals.front().first.day);
-
-    // TODO: Rest of the coherences
-
+    result.calculateScore(intervals, priorities);
     return result;
 }
 
