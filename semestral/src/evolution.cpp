@@ -1,6 +1,8 @@
 #include "evolution.h"
 
-Evolution::Evolution(const Semester & s, const Priorities & p):
+#define PROGRESS_BAR_WIDTH 50
+
+Evolution::Evolution(const Semester & s, const Priorities & p) :
     semester(s),
     priorities(p),
     genomeSize(0),
@@ -33,10 +35,9 @@ std::vector<EvolutionResult> Evolution::evolve(size_t generationSize, size_t max
     }
 
     for (size_t gen = 0; gen < maxGenerations; gen++) {
-        // TODO: Evolve
 
         if (verbal) {
-            std::cout << "  |- " << gen + 1 << std::endl;
+            loadingBar(std::cout, gen, maxGenerations);
         }
 
         std::vector<Genome> newGeneration;
@@ -45,6 +46,8 @@ std::vector<EvolutionResult> Evolution::evolve(size_t generationSize, size_t max
             size_t rParentIndex = randomNumber(genomeSize);
 
             Genome child = crossovers[0]->perform(currentGeneration[lParentIndex], currentGeneration[rParentIndex]);
+            // TODO: Crossovers
+
 
             // TODO: Mutations
 
@@ -195,6 +198,22 @@ std::vector<Genome> Evolution::createInitialGenerations(size_t generationSize) c
     }
 
     return result;
+}
+
+void Evolution::loadingBar(std::ostream & stream, size_t value, size_t maxValue) const {
+    size_t percentage = (value * 100) / maxValue;
+    size_t position = (PROGRESS_BAR_WIDTH * percentage) / 100;
+
+    stream << "[";
+    for (size_t i = 0; i < PROGRESS_BAR_WIDTH; i++) {
+        if (i < position) {
+            stream << "#";
+        } else {
+            stream << " ";
+        }
+    }
+    stream << "] " << percentage << "%\r";
+    stream.flush();
 }
 
 size_t Evolution::randomNumber(size_t maxValue) {

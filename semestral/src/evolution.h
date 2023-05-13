@@ -48,6 +48,8 @@ private:
 
     std::vector<Genome> createInitialGenerations(size_t generationSize) const;
 
+    void loadingBar(std::ostream & stream, size_t value, size_t maxValue) const;
+
     static size_t randomNumber(size_t maxValue);
 
 };
