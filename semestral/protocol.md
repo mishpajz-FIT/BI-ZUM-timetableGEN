@@ -33,6 +33,8 @@ Každý semestr má několik předmětů (v kódu `Course`), každý předmět m
 
 Student musí mít pro každý typ paralelky každého předmětu zapsanou jednu paralelku. Pro reprezentaci genomu jsem tedy využil hybrid bitového pole, kde každý index v poli genomu odkazuje na typ paralelky pro nějaký předmět. Hodnota v tomto poli je index paralelky pro tento typ paralelky tohoto předmětu. (viz. obrázek) To znamená, že pro každý prvek tohoto pole genomu mají hodnoty horní limit počet paralelek tohoto typu pro tento předmět.
 
+![Reprezentace záznamů v genomu](resources/representation-diagram.png)
+
 ### Crossover
 
 Z hlediska reprezentace dat jsem nemohl využít permutující operátory, protože by se stalo, že hodnota přepermutuje do jiného indexu v poli genomu, kde by tak indexovala neexistující paralelku. 
