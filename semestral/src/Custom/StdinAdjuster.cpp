@@ -222,7 +222,7 @@ void StdinAdjuster::adjustBonuses(Semester & semester) {
         }
 
         std::pair<std::shared_ptr<Entry>, StdinAdjuster::ReturnStatus> entry = retrieveEntry(schedule.first);
-        if (schedule.second != StdinAdjuster::ReturnStatus::GOOD) {
+        if (entry.second != StdinAdjuster::ReturnStatus::GOOD) {
             continue;
         }
 
