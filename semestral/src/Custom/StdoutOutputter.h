@@ -1,3 +1,14 @@
+/**
+ * @file StdoutOutputter.h
+ * @author Michal Dobes
+ * @date 2023-05-14
+ *
+ * @brief Outputter for outputing generated timetable to standard output
+ *
+ * @copyright Copyright (c) 2023
+ *
+ */
+
 #ifndef STDOUTOUTPUTTER_H
 #define STDOUTOUTPUTTER_H
 
@@ -10,11 +21,18 @@
 #include <algorithm>
 #include <iostream>
 
-class StdoutOutputter: Outputter {
+/**
+ * @brief Outputter for outputing generated timetable to standard output
+ *
+ * Labels are in English, can be subclassed for other languages.
+ *
+ */
+class StdoutOutputter : Outputter {
 
 protected:
-    std::array<std::string, 7> namesOfDays;
+    std::array<std::string, 7> namesOfDays; // Day names mapping
 
+    // Parity mapping
     std::string parityName;
     std::string parityOdd;
     std::string parityEven;
@@ -27,7 +45,11 @@ public:
 
 };
 
-class CS_StdoutOutputter: public StdoutOutputter {
+/**
+ * @brief Outputter for outputing generated timetable to standard output with Czech labels
+ *
+ */
+class CS_StdoutOutputter : public StdoutOutputter {
 
 public:
     CS_StdoutOutputter();

@@ -25,19 +25,21 @@ RANDOM_CROSSOVER_NUMBER_TYPE Crossover::randomNumber() {
 Genome UniformCrossover::perform(const Genome & lParent, const Genome & rParent) {
     size_t genomeSize = genomeCheck(lParent, rParent);
 
-    Genome descendant;
+    Genome descendant; // Child
 
     size_t randomNumBit = 0;
     uint32_t randomNum = randomNumber();
     for (size_t i = 0; i < genomeSize; i++) {
-        if (randomNumBit == RANDOM_CROSSOVER_NUMBER_SIZE) {
+
+        if (randomNumBit == RANDOM_CROSSOVER_NUMBER_SIZE) { // If taken all of bits from generated number,
+        // generate new number
             randomNum = randomNumber();
             randomNumBit = 0;
         }
 
-        unsigned short bit = (randomNum >>= 1) & 1;
+        unsigned short bit = (randomNum >>= 1) & 1; // Take one bit from generated number
 
-
+        // Assign gene to child from parent based on bit value
         if (bit == 0) {
             descendant.push_back(lParent[i]);
         } else {
@@ -63,8 +65,9 @@ Genome PointCrossover::perform(const Genome & lParent, const Genome & rParent) {
         throw CrossoverException("Length of genome too small for multi-point crossover.");
     }
 
+    // Generate random crossover points
     std::set<size_t> crossoverPoints;
-    while (crossoverPoints.size() < points) {
+    while (crossoverPoints.size() < points) { // Keep generating until required amount
         size_t point = randomNumber() % genomeSize;
         crossoverPoints.insert(point);
     }
@@ -72,12 +75,14 @@ Genome PointCrossover::perform(const Genome & lParent, const Genome & rParent) {
     Genome descendant;
 
     bool parentParity = true;
-    for (size_t i = 0; i < genomeSize; i++) {
+    for (size_t i = 0; i < genomeSize; i++) { // Go through genomes
 
+        // If in crossover point, swap parent from which will be genes taken
         if (crossoverPoints.contains(i)) {
             parentParity = !parentParity;
         }
 
+        // Assign gene from parent based on current parity
         if (parentParity) {
             descendant.push_back(lParent[i]);
         } else {

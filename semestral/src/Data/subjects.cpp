@@ -1,17 +1,11 @@
 #include "Data/subjects.h"
 
-bool Entry::CompareWeakPtr::operator()(const std::weak_ptr<Entry> & lhs, const std::weak_ptr<Entry> & rhs) const {
-    auto spLhs = lhs.lock();
-    auto spRhs = rhs.lock();
-    return spLhs->indexInSchedule < spRhs->indexInSchedule;
-}
 
 Entry::Entry(size_t ix, const std::weak_ptr<Schedule> & parent, uint32_t id) :
     bonus(0),
     id(id),
     additionalInformation(),
     timeslots(),
-    collisions(),
     schedule(parent),
     indexInSchedule(ix) { }
 

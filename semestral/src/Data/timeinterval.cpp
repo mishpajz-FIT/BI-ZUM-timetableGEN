@@ -1,8 +1,8 @@
 #include "Data/timeinterval.h"
 
-TimeInterval::TimeStamp::TimeStamp(uint32_t h, uint32_t m): hour(h), minute(m) {
+TimeInterval::TimeStamp::TimeStamp(uint32_t h, uint32_t m) : hour(h), minute(m) {
     if (h >= 24 || m >= 60) {
-        throw std::invalid_argument("TimeStamp: Hour or minute is larger than possible.");
+        throw std::invalid_argument("TimeStamp hour or minute is larger than possible.");
     }
 }
 
@@ -30,14 +30,8 @@ bool TimeInterval::operator < (const TimeInterval & rhs) const {
     size_t dayValue = static_cast<size_t>(day);
     size_t dayRhsValue = static_cast<size_t>(rhs.day);
 
-    if (dayValue == dayRhsValue) {
-        if (startTime == rhs.startTime) {
-            return endTime < rhs.endTime;
-        }
-        return startTime < rhs.startTime;
-    }
-
-    return dayValue < dayRhsValue;
+    // Compare by days and then primarily by start times
+    return std::tie(dayValue, startTime, endTime) < std::tie(dayRhsValue, rhs.startTime, rhs.endTime);
 }
 
 bool TimeInterval::operator > (const TimeInterval & rhs) const {
@@ -45,10 +39,10 @@ bool TimeInterval::operator > (const TimeInterval & rhs) const {
 }
 
 TimeInterval::TimeInterval(const enum Day & d, const TimeStamp & s, const TimeStamp & e,
-    const Parity & p):
+    const Parity & p) :
     day(d), startTime(s), endTime(e), parity(p) {
 
     if (s >= e) {
-        throw std::invalid_argument("TimeInterval: Start time is after end time..");
+        throw std::invalid_argument("TimeInterval start time is after end time");
     }
 }

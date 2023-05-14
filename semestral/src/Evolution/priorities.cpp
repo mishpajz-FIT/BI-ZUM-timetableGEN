@@ -59,6 +59,7 @@ void Scores::calculateScore(std::vector<IntervalEntry> & sortedIntervals, const 
     calculateBonusesScore(sortedIntervals, p);
 }
 
+// Weights for scores
 #define SCORE_CALCULATION_COLLISION_MULTIPLIER 0.6
 #define SCORE_CALCULATION_COHERENTDAY_MULTIPLIER 0.2
 #define SCORE_CALCULATION_COHERENTWEEK_MULTIPLIER 0.2
@@ -71,6 +72,7 @@ double Scores::convertScoreToFitness(const Scores & minValues, const Scores & ma
     double result = 0;
 
 #define convertScoring(val) inverseScoring(val, minValues.val, maxValues.val)
+
     result += convertScoring(collisions) * SCORE_CALCULATION_COLLISION_MULTIPLIER;
     if (p.keepCoherentInDay) {
         result += convertScoring(coherentInDay) * SCORE_CALCULATION_COHERENTDAY_MULTIPLIER;
@@ -88,11 +90,9 @@ double Scores::convertScoreToFitness(const Scores & minValues, const Scores & ma
     return result;
 }
 
-
 double Scores::inverseScoring(double value, double min, double max) const {
 
     if (value < min || value > max) {
-        printf("val=%lf, min:%lf max:%lf\n", value, min, max);
         throw std::invalid_argument("Value is out of min-max range.");
     }
 
@@ -110,17 +110,22 @@ void Scores::calculateCoherentInDayScore(std::vector<IntervalEntry> & sortedInte
     if (!p.keepCoherentInDay) {
         return;
     }
+
+    // Iterate through all intervals
     for (auto it = sortedIntervals.begin(); it != sortedIntervals.end(); it++) {
-        if (it->second->schedule.lock()->ignored) {
+        if (it->second->schedule.lock()->ignored) { // Skip ignored
             continue;
         }
 
         auto next = it + 1;
-        while (next != sortedIntervals.end() && it->first.day == next->first.day) {
+        while (next != sortedIntervals.end() && it->first.day == next->first.day) { // FInd next interval that is not ingnored
             if (next->second->schedule.lock()->ignored) {
                 next++;
                 continue;
             }
+
+            // Check if start time of the next interval is larger than minutes to be consecutive 
+            // (and if it is, raise the score)
 
             if (next->first.startTime < it->first.endTime) {
                 break;
@@ -137,7 +142,7 @@ void Scores::calculateCoherentInDayScore(std::vector<IntervalEntry> & sortedInte
 
 void Scores::calculateCoherentInWeekScore(std::vector<IntervalEntry> & sortedIntervals, const Priorities & p) {
     auto beginIt = sortedIntervals.begin();
-    while (beginIt != sortedIntervals.end()) {
+    while (beginIt != sortedIntervals.end()) { // Find first interval that is not ignored
         if (!beginIt->second->schedule.lock()->ignored) {
             break;
         }
@@ -149,7 +154,7 @@ void Scores::calculateCoherentInWeekScore(std::vector<IntervalEntry> & sortedInt
     }
 
     auto endIt = sortedIntervals.rbegin();
-    while (endIt != sortedIntervals.rend()) {
+    while (endIt != sortedIntervals.rend()) { // Find last interval that is not ignored
         if (!endIt->second->schedule.lock()->ignored) {
             break;
         }
@@ -160,26 +165,33 @@ void Scores::calculateCoherentInWeekScore(std::vector<IntervalEntry> & sortedInt
         return;
     }
 
+    // Calculate days between first and last interval
     coherentInWeek = static_cast<size_t>(endIt->first.day) - static_cast<size_t>(beginIt->first.day);
 }
 
 void Scores::calculateCollisionsScore(std::vector<IntervalEntry> & sortedIntervals, const Priorities & p) {
+    // Iterate through all intervals
     for (auto it = sortedIntervals.begin(); it != sortedIntervals.end(); it++) {
 
-        if (it->second->schedule.lock()->ignored) {
+        if (it->second->schedule.lock()->ignored) { // Skip ignored intervals
             continue;
         }
 
+        // Iterate through all intervals that follow this interval and could collide with this interval
         auto collisionIt = it + 1;
         while (collisionIt != sortedIntervals.end()
             && ((collisionIt->first.startTime < it->first.endTime) && (it->first.day == collisionIt->first.day))) {
 
+            if (!collisionIt->second->schedule.lock()->ignored) { // Skip if the other interval is ignored
+                collisionIt++;
+                continue;
+            }
+
+            // Check if they collide by having same parity (or both parity), and raise collisions score
             if (it->first.parity == collisionIt->first.parity
                 || (it->first.parity == TimeInterval::Parity::Both || collisionIt->first.parity == TimeInterval::Parity::Both)) {
 
-                if (!collisionIt->second->schedule.lock()->ignored) {
-                    collisions++;
-                }
+                collisions++;
             }
 
             collisionIt++;
@@ -192,32 +204,37 @@ void Scores::calculateManyConsecutiveHoursScore(std::vector<IntervalEntry> & sor
         return;
     }
 
-    TimeInterval currentInterval = sortedIntervals.begin()->first;
-
+    TimeInterval currentInterval = sortedIntervals.begin()->first; // Current interval is the current interval plus 
+    // previous intervals that are continuous with this one
     auto it = sortedIntervals.begin();
-    while (it != sortedIntervals.end()) {
+    while (it != sortedIntervals.end()) { // Iterate through all intervals
 
-        if (it->second->schedule.lock()->ignored) {
+        if (it->second->schedule.lock()->ignored) { // Skip over ignored intervals
             it++;
             continue;
         }
 
+        // If interval in another day than current interval or if difference too big to be consecutive
         size_t difference = (it->first.startTime.valueInMinutes() - currentInterval.endTime.valueInMinutes());
         if (currentInterval.day != it->first.day || difference > p.minutesToBeConsecutive) {
+
+            // If current interval has minimum length, add minutes over to many consecutive hours score
             size_t length = (currentInterval.endTime.valueInMinutes() - currentInterval.startTime.valueInMinutes());
             size_t hours = length / 60;
             if (hours > p.penaliseManyConsecutiveHours) {
                 manyConsecutiveHours += (length - p.penaliseManyConsecutiveHours * 60);
             }
 
+            // Reset current interval
             currentInterval = it->first;
-        } else {
+        } else { // Else extend current interval by this interval
             currentInterval.endTime = it->first.endTime;
         }
 
         it++;
     }
 
+    // If current interval (last one) has minimum length, add minutes over to many consecutive hours score
     size_t length = (currentInterval.endTime.valueInMinutes() - currentInterval.startTime.valueInMinutes());
     size_t hours = length / 60;
     if (hours > p.penaliseManyConsecutiveHours) {
@@ -225,41 +242,48 @@ void Scores::calculateManyConsecutiveHoursScore(std::vector<IntervalEntry> & sor
     }
 }
 
+// Default score to add for any start time out of prefferred bounds
 #define SCORE_CALCULATION_WRONGSTARTTIMEDEFAULT 60
 
 void Scores::calculateWrongStartTimesScore(std::vector<IntervalEntry> & sortedIntervals, const Priorities & p) {
 
-    if (p.penaliseBeforeHour != 0) {
+    if (p.penaliseBeforeHour != 0 || p.penaliseAfterHour != 0) {
+        // Iterate through all intervals
         for (auto it = sortedIntervals.begin(); it != sortedIntervals.end(); it++) {
 
-            if (it->second->schedule.lock()->ignored) {
+            if (it->second->schedule.lock()->ignored) { // Skip over ignored intervals
                 continue;
             }
 
-            TimeInterval::TimeStamp penalisationTime(p.penaliseBeforeHour, 0);
-            if (it->first.startTime.valueInMinutes() <= penalisationTime.valueInMinutes()) {
-                wrongStartTimes += SCORE_CALCULATION_WRONGSTARTTIMEDEFAULT + (penalisationTime.valueInMinutes() - it->first.startTime.valueInMinutes());
-            }
-        }
-    }
-
-    if (p.penaliseAfterHour != 0) {
-        for (auto it = sortedIntervals.begin(); it != sortedIntervals.end(); it++) {
-
-            if (it->second->schedule.lock()->ignored) {
-                continue;
+            if (p.penaliseBeforeHour != 0) {
+                // Check if interval starts before preferred bound and raise wrong start times score
+                TimeInterval::TimeStamp penalisationBeforeTime(p.penaliseBeforeHour, 0);
+                if (it->first.startTime.valueInMinutes() <= penalisationBeforeTime.valueInMinutes()) {
+                    wrongStartTimes += SCORE_CALCULATION_WRONGSTARTTIMEDEFAULT + (penalisationBeforeTime.valueInMinutes() - it->first.startTime.valueInMinutes());
+                }
             }
 
-            TimeInterval::TimeStamp penalisationTime(p.penaliseAfterHour, 0);
-            if (it->first.startTime.valueInMinutes() >= penalisationTime.valueInMinutes()) {
-                wrongStartTimes += SCORE_CALCULATION_WRONGSTARTTIMEDEFAULT + (it->first.startTime.valueInMinutes() - penalisationTime.valueInMinutes());
+            if (p.penaliseBeforeHour != 0) {
+                // Check if interval starts after preferred bound and raise wrong start times score
+                TimeInterval::TimeStamp penalisationAfterTime(p.penaliseAfterHour, 0);
+                if (it->first.startTime.valueInMinutes() >= penalisationAfterTime.valueInMinutes()) {
+                    wrongStartTimes += SCORE_CALCULATION_WRONGSTARTTIMEDEFAULT + (it->first.startTime.valueInMinutes() - penalisationAfterTime.valueInMinutes());
+                }
             }
+
+
         }
     }
 }
 
 void  Scores::calculateBonusesScore(std::vector<IntervalEntry> & sortedIntervals, const Priorities & p) {
+    // Iterate through all intervals
     for (auto it = sortedIntervals.begin(); it != sortedIntervals.end(); it++) {
+
+        if (it->second->schedule.lock()->ignored) { // Skip over ignored intervals
+            continue;
+        }
+
         bonuses += it->second->getBonus();
     }
 }

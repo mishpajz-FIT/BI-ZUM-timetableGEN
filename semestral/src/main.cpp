@@ -1,3 +1,14 @@
+/**
+ * @file main.cpp
+ * @author Michal Dobes
+ * @date 2023-05-14
+ *
+ * @brief FIT CTU Timetable generator using genetic algorithm
+ *
+ * @copyright Copyright (c) 2023
+ *
+ */
+
 #include "Custom/FITCTUFileImporter.h"
 #include "Custom/StdinAdjuster.h"
 #include "Custom/StdoutOutputter.h"
@@ -7,13 +18,25 @@
 #include <vector>
 #include <string>
 
+// Length of visual separator on output
 #define SEPARATOR_LENGTH 80
-#define WINDOW_HEIGHT 100
 
+// Multiplier of generation size (multiplies genome size)
 #define GENERATION_SIZE_MULTIPLIER 4
+
+// Default count of generations
 #define GENERATION_COUNT 100
 
 
+/**
+ * @brief Checks the stdin for failure
+ *
+ * If a failure is detected, stream is cleared of remaining character and its state.
+ * Console is cleared and a message is outputted signaling wrong input.
+ *
+ * @return true input failed
+ * @return false input correct
+ */
 bool checkInputForFail() {
     if (std::cin.fail()) {
         std::cin.clear(); // Clean stdin for next tries
@@ -25,17 +48,29 @@ bool checkInputForFail() {
     return false;
 }
 
+/**
+ * @brief Load FIT CTU's semester from file
+ *
+ * User is prompted for a path containing parallels of courses from KOS FIT CTU (in Czech).
+ * In case of a problem with loading, an error message is outputted to error stream
+ * and the program is exited with failure.
+ *
+ * @param logo string containing ascii art logo
+ * @return Semester imported semester
+ */
 Semester loadSemester(std::string & logo) {
+    // Print header
     std::cout << logo << std::endl;
     std::cout << std::string(SEPARATOR_LENGTH, '=') << '\n';
     std::cout << "Enter a path to a file with parallels of courses from KOS FIT CTU (in Czech):\n";
     std::cout << std::string(SEPARATOR_LENGTH, '_') << std::endl;
+
+    // Get input
     std::string filepath;
     std::cin >> filepath;
 
-
+    // Process input
     Semester result;
-
     try {
         CS_FITCTUFileImporter importer(filepath);
         result = importer.import();
@@ -49,27 +84,42 @@ Semester loadSemester(std::string & logo) {
     return result;
 }
 
+/**
+ * @brief Load priorities from user.
+ *
+ * The user is prompted to adjust priorities.
+ * If user declines, default priorities are used, else they are configured from
+ * standard input.
+ *
+ * @param logo string containing ascii art logo
+ * @param semester loaded semester, for which priorities will be set
+ * @return Priorities set priorities
+ */
 Priorities loadPriorities(std::string & logo, Semester & semester) {
     Priorities result;
     char choice;
     do {
+        // Print header
         std::cout << logo << std::endl;
         std::cout << std::string(SEPARATOR_LENGTH, '=') << '\n';
         std::cout << "Adjust priorities for schedule properties? (y/n):\n";
         std::cout << std::string(SEPARATOR_LENGTH, '_') << std::endl;
 
+        // Get input
         std::cin >> choice;
         if (checkInputForFail()) {
             continue;
         }
 
+        // Input validation
         if (choice == 'y' || choice == 'Y') {
             break;
-        } else if (choice == 'n' || choice == 'N') {
+        } else if (choice == 'n' || choice == 'N') { // Return default priorities
             return result;
         }
     } while (true);
 
+    // Configure priorities
     StdinAdjuster adjuster;
     result = adjuster(semester);
 
@@ -77,16 +127,28 @@ Priorities loadPriorities(std::string & logo, Semester & semester) {
     return result;
 }
 
+/**
+ * @brief Generates a timetable and outputs result to standard output
+ *
+ * Function prompts the user to enter the number of generations to use.
+ *
+ * @param logo
+ * @param semester Semester to generate timetable for
+ * @param priorities Priorities to use
+ */
 void evolve(std::string & logo, Semester & semester, Priorities & priorities) {
     std::cout << "\033[1;1H\033[2J" << std::endl; // Clean console
 
+    // Create evolution and calculate generation size
     Evolution evolution(semester, priorities);
     size_t generationSize = evolution.getGenomeSize() * GENERATION_SIZE_MULTIPLIER;
 
-    std::cin.ignore();
+    std::cin.ignore(); // Clear previous character stuck in cin
 
+    // Retrieve generation count
     unsigned int generationCount = GENERATION_COUNT;
     do {
+        // Print header
         std::cout << logo << std::endl;
         std::cout << std::string(SEPARATOR_LENGTH, '=') << '\n';
         std::cout << "Number of generations.\n\n";
@@ -96,14 +158,16 @@ void evolve(std::string & logo, Semester & semester, Priorities & priorities) {
         std::cout << "Enter generation count number (or press enter to keep default number):\n";
         std::cout << std::string(SEPARATOR_LENGTH, '_') << std::endl;
 
+        // Get input
         std::string line;
         std::getline(std::cin, line);
 
-        if (line.empty()) {
+        if (line.empty()) { // Use default value
             generationCount = GENERATION_COUNT;
             break;
         }
 
+        // Input validation
         try {
             generationCount = std::stoul(line);
         }
@@ -122,12 +186,13 @@ void evolve(std::string & logo, Semester & semester, Priorities & priorities) {
         break;
     } while (true);
 
-
+    // Evolve
     std::cout << "\033[1;1H\033[2J" << std::endl; // Clean console
     std::cout << logo << std::endl;
     std::cout << generationCount << " generations" << std::endl;
     std::vector<EvolutionResult> result = evolution.evolve(generationSize, generationCount);
 
+    // Print output
     std::cout << "\033[1;1H\033[2J" << std::endl; // Clean console
     std::cout << logo << std::endl;
     CS_StdoutOutputter outputter;
@@ -137,7 +202,7 @@ void evolve(std::string & logo, Semester & semester, Priorities & priorities) {
 int main() {
     std::cout << "\033[1;1H\033[2J" << std::endl; // Clean console
 
-    std::string logo;
+    std::string logo; // Ascii art logo
     logo += "   __  _                __        __    __                    \n";
     logo += "  / /_(_)___ ___  ___  / /_____ _/ /_  / /__  ____ ____  ____ \n";
     logo += " / __/ / __ `__ \\/ _ \\/ __/ __ `/ __ \\/ / _ \\/ __ `/ _ \\/ __ \\\n";
