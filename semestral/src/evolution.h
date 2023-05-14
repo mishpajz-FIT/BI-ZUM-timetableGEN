@@ -38,6 +38,8 @@ public:
 
     std::vector<EvolutionResult> evolve(size_t generationSize = 100, size_t maxGenerations = 100, bool verbal = true);
 
+    size_t getGenomeSize() const;
+
 private:
 
     void selection(std::vector<Genome> & newGeneration, size_t generationSize);

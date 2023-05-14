@@ -89,6 +89,10 @@ std::vector<EvolutionResult> Evolution::evolve(size_t generationSize, size_t max
     return result;
 }
 
+size_t Evolution::getGenomeSize() const {
+    return genomeSize;
+}
+
 void Evolution::selection(std::vector<Genome> & newGeneration, size_t generationSize) {
 
     Scores minValues;

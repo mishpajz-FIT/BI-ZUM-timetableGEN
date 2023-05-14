@@ -10,6 +10,21 @@
 #define SEPARATOR_LENGTH 80
 #define WINDOW_HEIGHT 100
 
+#define GENERATION_SIZE_MULTIPLIER 4
+#define GENERATION_COUNT 100
+
+
+bool checkInputForFail() {
+    if (std::cin.fail()) {
+        std::cin.clear(); // Clean stdin for next tries
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        std::cout << "\033[1;1H\033[2J" << std::endl; // Clean console
+        std::cout << "(!) Wrong input.\n";
+        return true;
+    }
+    return false;
+}
+
 Semester loadSemester(std::string & logo) {
     std::cout << logo << std::endl;
     std::cout << std::string(SEPARATOR_LENGTH, '=') << '\n';
@@ -35,15 +50,18 @@ Semester loadSemester(std::string & logo) {
 }
 
 Priorities loadPriorities(std::string & logo, Semester & semester) {
-    std::cout << logo << std::endl;
-    std::cout << std::string(SEPARATOR_LENGTH, '=') << '\n';
-    std::cout << "Adjust priorities for schedule properties? (y/n):\n";
-    std::cout << std::string(SEPARATOR_LENGTH, '_') << std::endl;
-
     Priorities result;
     char choice;
     do {
+        std::cout << logo << std::endl;
+        std::cout << std::string(SEPARATOR_LENGTH, '=') << '\n';
+        std::cout << "Adjust priorities for schedule properties? (y/n):\n";
+        std::cout << std::string(SEPARATOR_LENGTH, '_') << std::endl;
+
         std::cin >> choice;
+        if (checkInputForFail()) {
+            continue;
+        }
 
         if (choice == 'y' || choice == 'Y') {
             break;
@@ -61,9 +79,54 @@ Priorities loadPriorities(std::string & logo, Semester & semester) {
 
 void evolve(std::string & logo, Semester & semester, Priorities & priorities) {
     std::cout << "\033[1;1H\033[2J" << std::endl; // Clean console
-    std::cout << logo << std::endl;
+
     Evolution evolution(semester, priorities);
-    std::vector<EvolutionResult> result = evolution.evolve(100, 100);
+    size_t generationSize = evolution.getGenomeSize() * GENERATION_SIZE_MULTIPLIER;
+
+    std::cin.ignore();
+
+    unsigned int generationCount = GENERATION_COUNT;
+    do {
+        std::cout << logo << std::endl;
+        std::cout << std::string(SEPARATOR_LENGTH, '=') << '\n';
+        std::cout << "Number of generations.\n\n";
+        std::cout << "Lager generation count may improve properties of the generated timetable (if the ideal schedule has not been achieved),\n";
+        std::cout << "but will greatly increase required computation time.\n";
+        std::cout << "The default number is [" << GENERATION_COUNT << "] in most cases it is recommended to keep at default.\n";
+        std::cout << "Enter generation count number (or press enter to keep default number):\n";
+        std::cout << std::string(SEPARATOR_LENGTH, '_') << std::endl;
+
+        std::string line;
+        std::getline(std::cin, line);
+
+        if (line.empty()) {
+            generationCount = GENERATION_COUNT;
+            break;
+        }
+
+        try {
+            generationCount = std::stoul(line);
+        }
+        catch (...) {
+            std::cout << "\033[1;1H\033[2J" << std::endl; // Clean console
+            std::cout << "(!) Unable to read input.\n";
+            continue;
+        }
+
+        if (generationCount == 0) {
+            std::cout << "\033[1;1H\033[2J" << std::endl; // Clean console
+            std::cout << "(!) Generaton count can not be zero.\n";
+            continue;
+        }
+
+        break;
+    } while (true);
+
+
+    std::cout << "\033[1;1H\033[2J" << std::endl; // Clean console
+    std::cout << logo << std::endl;
+    std::cout << generationCount << " generations" << std::endl;
+    std::vector<EvolutionResult> result = evolution.evolve(generationSize, generationCount);
 
     std::cout << "\033[1;1H\033[2J" << std::endl; // Clean console
     std::cout << logo << std::endl;
