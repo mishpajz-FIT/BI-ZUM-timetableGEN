@@ -87,6 +87,7 @@ double Scores::convertScoreToFitness(const Scores & minValues, const Scores & ma
         result += convertScoring(manyConsecutiveHours) * SCORE_CALCULATION_CONSECUTIVEHOURS_MULTIPLIER;
     }
     result += bonuses * SCORE_CALCULATION_BONUS_MULTIPLIER;
+
     return result;
 }
 
@@ -182,7 +183,7 @@ void Scores::calculateCollisionsScore(std::vector<IntervalEntry> & sortedInterva
         while (collisionIt != sortedIntervals.end()
             && ((collisionIt->first.startTime < it->first.endTime) && (it->first.day == collisionIt->first.day))) {
 
-            if (!collisionIt->second->schedule.lock()->ignored) { // Skip if the other interval is ignored
+            if (collisionIt->second->schedule.lock()->ignored) { // Skip if the other interval is ignored
                 collisionIt++;
                 continue;
             }
@@ -263,7 +264,7 @@ void Scores::calculateWrongStartTimesScore(std::vector<IntervalEntry> & sortedIn
                 }
             }
 
-            if (p.penaliseBeforeHour != 0) {
+            if (p.penaliseAfterHour != 0) {
                 // Check if interval starts after preferred bound and raise wrong start times score
                 TimeInterval::TimeStamp penalisationAfterTime(p.penaliseAfterHour, 0);
                 if (it->first.startTime.valueInMinutes() >= penalisationAfterTime.valueInMinutes()) {
