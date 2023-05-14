@@ -1,3 +1,14 @@
+/**
+ * @file evolution.h
+ * @author Michal Dobes
+ * @date 2023-05-14
+ *
+ * @brief Evolution algorithm for timetable generation
+ *
+ * @copyright Copyright (c) 2023
+ *
+ */
+
 #ifndef EVOLUTION_H
 #define EVOLUTION_H
 
@@ -13,47 +24,146 @@
 #include <algorithm>
 #include <iostream>
 
-using EntryAddress = std::pair<std::string, std::string>; // course and schedule name
+/**
+ * @brief Course and Schedule name
+ *
+ * @see Course
+ * @see Schedule
+ *
+ * In a pair, first is Course name, second is Schedule name.
+ *
+ */
+using EntryAddress = std::pair<std::string, std::string>;
 
+/**
+ * @brief Entry selected for Course and Schedule
+ *
+ * @see EntryAddress
+ *
+ * @see Course
+ * @see Schedule
+ * @see Entry
+ *
+ * In a pair, first is Course and Schedule name, second is selected Entry.
+ *
+ */
 using EvolutionResult = std::pair<EntryAddress, std::shared_ptr<Entry>>;
 
+/**
+ * @brief Evolution algorithm for timetable generation
+ *
+ */
 class Evolution {
 
-    Semester semester;
-    Priorities priorities;
+    Semester semester; // Semester to generate timetable for
+    Priorities priorities; // Specified priorities for generation
 
-    size_t genomeSize;
+    size_t genomeSize; // Calculated genome size
+    // Index in genome matches index in this vector, which links to Schedule,
+    // the value at this index in Genome is index to entry in this Schedule
     std::vector<std::shared_ptr<Schedule>> genomeIndexToSchedule;
+    // Course and Schedule name to index in genome
     std::map<EntryAddress, size_t> courseAndScheduleToGenomeIndex;
 
-    std::vector<std::unique_ptr<Crossover>> crossovers;
+
+    std::vector<std::unique_ptr<Crossover>> crossovers; // Crossover operators
 
 public:
 
     Evolution() = delete;
 
+    /**
+     * @brief Construct a new Evolution object
+     *
+     * @param s semester for which a timetable will be generated
+     * @param p priorities for timetable generation
+     */
     Evolution(const Semester & s, const Priorities & p);
 
     ~Evolution() = default;
 
+    /**
+     * @brief Generate timetable using genetic algorithm
+     *
+     * @throws std::invalid_argument generation size or number of generations is zero
+     *
+     * @param generationSize size of generations
+     * @param maxGenerations number of generations
+     * @param verbal progress output to standard output
+     * @return std::vector<EvolutionResult> generated timetable (vector of selected Entries for each Course and its Schedule)
+     */
     std::vector<EvolutionResult> evolve(size_t generationSize = 100, size_t maxGenerations = 100, bool verbal = true);
 
+    /**
+     * @brief Get size of genome
+     *
+     * @return size_t size of genome
+     */
     size_t getGenomeSize() const;
 
 private:
 
+    /**
+     * @brief Performs selection of best genomes, based on fitness
+     *
+     * Only amount of genomes up to generation size will be selected.
+     *
+     * The returned genomes will be sorted by their fitness.
+     *
+     * @param[inout] newGeneration generation
+     * @param generationSize desired size of generation
+     */
     void selection(std::vector<Genome> & newGeneration, size_t generationSize);
 
-    double fitness(const Scores & genomeScore, const Scores & minValues, const Scores & maxValues);
-
+    /**
+     * @brief Score given genome
+     *
+     * @param genome genome to be scored
+     * @return Scores score of genome
+     */
     Scores score(const Genome & genome);
 
+    /**
+     * @brief Mutate given genome
+     *
+     * Genomes are mutated on random place with a certain mutation chance.
+     *
+     * @param genome genome to be mutated
+     * @return true genome was mutated
+     * @return false genmoe was mutated
+     */
     bool mutate(Genome & genome);
 
+    /**
+     * @brief Create initial generation
+     *
+     * Genomes are created randomly.
+     *
+     * @param generationSize Size of the generation
+     * @return std::vector<Genome> initial generation
+     */
     std::vector<Genome> createInitialGenerations(size_t generationSize) const;
 
+    /**
+     * @brief Print loading bar to stream
+     *
+     * Progress bar rewrites itself. (The cursor is returned at beggining after
+     * writing the progress bar).
+     *
+     * @param stream stream where progress bar should be outputted
+     * @param value current value
+     * @param maxValue max value that will be reached (value that means 100%)
+     */
     void loadingBar(std::ostream & stream, size_t value, size_t maxValue) const;
 
+    /**
+     * @brief Random number
+     *
+     * In range [0, maxValue).
+     *
+     * @param maxValue upper limit
+     * @return size_t random number
+     */
     static size_t randomNumber(size_t maxValue);
 
 };
