@@ -5,6 +5,7 @@
 
 #include <cstdint>
 #include <algorithm>
+#include <exception>
 
 struct Priorities {
 
@@ -39,9 +40,11 @@ struct Scores {
 
     void calculateScore(std::vector<IntervalEntry> & sortedIntervals, const Priorities & p);
 
-    double convertScoreToFitness(const Scores & minValues, const Scores & maxValues) const;
+    double convertScoreToFitness(const Scores & minValues, const Scores & maxValues, const Priorities & p) const;
 
 private:
+
+    inline double inverseScoring(double value, double min, double max) const;
 
     void calculateCoherentInDayScore(std::vector<IntervalEntry> & sortedIntervals, const Priorities & p);
 

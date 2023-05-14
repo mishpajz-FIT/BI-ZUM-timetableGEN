@@ -3,7 +3,7 @@
 #define EVOLUTION_PROGRESS_BAR_WIDTH 50
 
 #define EVOLUTION_POINT_CROSSOVER_DIVIDER 10
-#define EVOLUTION_MUTATION_ONE_IN 3
+#define EVOLUTION_MUTATION_ONE_IN 2
 #define EVOLUTION_MUTATION_DIVIDER 25
 
 Evolution::Evolution(const Semester & s, const Priorities & p) :
@@ -39,7 +39,7 @@ std::vector<EvolutionResult> Evolution::evolve(size_t generationSize, size_t max
     currentGeneration = createInitialGenerations(generationSize);
 
     if (verbal) {
-        std::cout << "Evolution generation:" << std::endl;
+        std::cout << "Evolution:" << std::endl;
     }
 
     for (size_t gen = 0; gen < maxGenerations; gen++) {
@@ -50,8 +50,8 @@ std::vector<EvolutionResult> Evolution::evolve(size_t generationSize, size_t max
 
         std::vector<Genome> newGeneration;
         while (newGeneration.size() < generationSize * generationSize) {
-            size_t lParentIndex = randomNumber(genomeSize);
-            size_t rParentIndex = randomNumber(genomeSize);
+            size_t lParentIndex = randomNumber(generationSize);
+            size_t rParentIndex = randomNumber(generationSize);
 
 
             size_t crossoverIndex = randomNumber(crossovers.size());
@@ -94,10 +94,19 @@ void Evolution::selection(std::vector<Genome> & newGeneration, size_t generation
     Scores minValues;
     Scores maxValues;
 
+    bool first = true;
     std::vector<std::pair<Genome, Scores>> scoredGenomes;
     for (auto it = newGeneration.begin(); it != newGeneration.end(); it++) {
         Scores itScore = score(*it);
         scoredGenomes.emplace_back(std::make_pair(*it, itScore));
+
+        if (first) {
+            minValues = itScore;
+            maxValues = itScore;
+            first = false;
+            continue;
+        }
+
         minValues.setToMinValuesFrom(itScore);
         maxValues.setToMaxValuesFrom(itScore);
     }
@@ -105,7 +114,7 @@ void Evolution::selection(std::vector<Genome> & newGeneration, size_t generation
     using GenomeFitness = std::pair<Genome, double>;
     std::vector<GenomeFitness> fitnessedGenomes;
     for (auto it = scoredGenomes.begin(); it != scoredGenomes.end(); it++) {
-        fitnessedGenomes.emplace_back(std::make_pair(it->first, it->second.convertScoreToFitness(minValues, maxValues)));
+        fitnessedGenomes.emplace_back(std::make_pair(it->first, it->second.convertScoreToFitness(minValues, maxValues, priorities)));
     }
 
     std::sort(fitnessedGenomes.begin(), fitnessedGenomes.end(), [ ] (const GenomeFitness & lhs, const GenomeFitness & rhs) -> bool {

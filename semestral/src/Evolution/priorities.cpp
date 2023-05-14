@@ -18,7 +18,7 @@ Scores::Scores() :
 
 void Scores::setToMinValuesFrom(const Scores & s) {
 
-#define minimum(val) val = std::min(val, s.val);
+#define minimum(val) val = std::min(val, s.val)
 
     minimum(coherentInDay);
     minimum(coherentInWeek);
@@ -31,12 +31,12 @@ void Scores::setToMinValuesFrom(const Scores & s) {
 
 void Scores::setToMaxValuesFrom(const Scores & s) {
 
-#define maximum(val) val = std::max(val, s.val);
+#define maximum(val) val = std::max(val, s.val)
 
     maximum(coherentInDay);
     maximum(coherentInWeek);
     maximum(collisions);
-    minimum(manyConsecutiveHours);
+    maximum(manyConsecutiveHours);
     maximum(wrongStartTimes);
     maximum(bonuses);
 
@@ -59,18 +59,51 @@ void Scores::calculateScore(std::vector<IntervalEntry> & sortedIntervals, const 
     calculateBonusesScore(sortedIntervals, p);
 }
 
-double Scores::convertScoreToFitness(const Scores & minValues, const Scores & maxValues) const {
+#define SCORE_CALCULATION_COLLISION_MULTIPLIER 0.6
+#define SCORE_CALCULATION_COHERENTDAY_MULTIPLIER 0.2
+#define SCORE_CALCULATION_COHERENTWEEK_MULTIPLIER 0.2
+#define SCORE_CALCULATION_WRONGSTARTTIME_MULTIPLIER 0.13
+#define SCORE_CALCULATION_CONSECUTIVEHOURS_MULTIPLIER 0.07
+#define SCORE_CALCULATION_BONUS_MULTIPLIER 0.2
+
+
+double Scores::convertScoreToFitness(const Scores & minValues, const Scores & maxValues, const Priorities & p) const {
     double result = 0;
 
-#define inverseScoring(val) (10 - 9 * ((val - minValues.val) / (maxValues.val - minValues.val)))
-
-    result += 5 * (inverseScoring(collisions));
-    result += inverseScoring(coherentInDay);
-    /* result += (inverseScoring(wrongStartTimes));
-    result += inverseScoring(coherentInWeek);
-    result += bonuses;*/
-
+#define convertScoring(val) inverseScoring(val, minValues.val, maxValues.val)
+    result += convertScoring(collisions) * SCORE_CALCULATION_COLLISION_MULTIPLIER;
+    if (p.keepCoherentInDay) {
+        result += convertScoring(coherentInDay) * SCORE_CALCULATION_COHERENTDAY_MULTIPLIER;
+    }
+    if (p.keepCoherentInWeek) {
+        result += convertScoring(coherentInWeek) * SCORE_CALCULATION_COHERENTWEEK_MULTIPLIER;
+    }
+    if (p.penaliseAfterHour != 0 || p.penaliseBeforeHour != 0) {
+        result += convertScoring(wrongStartTimes) * SCORE_CALCULATION_WRONGSTARTTIME_MULTIPLIER;
+    }
+    if (p.penaliseManyConsecutiveHours != 0) {
+        result += convertScoring(manyConsecutiveHours) * SCORE_CALCULATION_CONSECUTIVEHOURS_MULTIPLIER;
+    }
+    result += bonuses * SCORE_CALCULATION_BONUS_MULTIPLIER;
     return result;
+}
+
+
+double Scores::inverseScoring(double value, double min, double max) const {
+
+    if (value < min || value > max) {
+        printf("val=%lf, min:%lf max:%lf\n", value, min, max);
+        throw std::invalid_argument("Value is out of min-max range.");
+    }
+
+    if (min == max) {
+        return 10;
+    }
+
+    double factor = 10.0 / (max - min);
+    double transformedValue = max - value;
+
+    return transformedValue * factor;
 }
 
 void Scores::calculateCoherentInDayScore(std::vector<IntervalEntry> & sortedIntervals, const Priorities & p) {
@@ -78,20 +111,24 @@ void Scores::calculateCoherentInDayScore(std::vector<IntervalEntry> & sortedInte
         return;
     }
     for (auto it = sortedIntervals.begin(); it != sortedIntervals.end(); it++) {
-        /*if (it->second->schedule.lock()->ignored) {
+        if (it->second->schedule.lock()->ignored) {
             continue;
-        }*/
+        }
 
         auto next = it + 1;
         while (next != sortedIntervals.end() && it->first.day == next->first.day) {
-            /*if (next->second->schedule.lock()->ignored) {
+            if (next->second->schedule.lock()->ignored) {
                 next++;
                 continue;
-            }*/
+            }
+
+            if (next->first.startTime < it->first.endTime) {
+                break;
+            }
 
             size_t coherenceValue = (next->first.startTime.valueInMinutes() - it->first.endTime.valueInMinutes());
             if (coherenceValue >= p.minutesToBeConsecutive) {
-                coherentInDay += coherenceValue;
+                coherentInDay++;
             }
             break;
         }
@@ -123,17 +160,16 @@ void Scores::calculateCoherentInWeekScore(std::vector<IntervalEntry> & sortedInt
         return;
     }
 
-    coherentInWeek = static_cast<size_t>(beginIt->first.day) - static_cast<size_t>(endIt->first.day);
+    coherentInWeek = static_cast<size_t>(endIt->first.day) - static_cast<size_t>(beginIt->first.day);
 }
 
 void Scores::calculateCollisionsScore(std::vector<IntervalEntry> & sortedIntervals, const Priorities & p) {
     for (auto it = sortedIntervals.begin(); it != sortedIntervals.end(); it++) {
 
-        /*if (it->second->schedule.lock()->ignored) {
+        if (it->second->schedule.lock()->ignored) {
             continue;
-        }*/
+        }
 
-        // Collision score
         auto collisionIt = it + 1;
         while (collisionIt != sortedIntervals.end()
             && ((collisionIt->first.startTime < it->first.endTime) && (it->first.day == collisionIt->first.day))) {
@@ -141,9 +177,9 @@ void Scores::calculateCollisionsScore(std::vector<IntervalEntry> & sortedInterva
             if (it->first.parity == collisionIt->first.parity
                 || (it->first.parity == TimeInterval::Parity::Both || collisionIt->first.parity == TimeInterval::Parity::Both)) {
 
-                //if (!collisionIt->second->schedule.lock()->ignored) {
-                collisions++;
-            //}
+                if (!collisionIt->second->schedule.lock()->ignored) {
+                    collisions++;
+                }
             }
 
             collisionIt++;
@@ -171,7 +207,7 @@ void Scores::calculateManyConsecutiveHoursScore(std::vector<IntervalEntry> & sor
             size_t length = (currentInterval.endTime.valueInMinutes() - currentInterval.startTime.valueInMinutes());
             size_t hours = length / 60;
             if (hours > p.penaliseManyConsecutiveHours) {
-                manyConsecutiveHours += hours;
+                manyConsecutiveHours += (length - p.penaliseManyConsecutiveHours * 60);
             }
 
             currentInterval = it->first;
@@ -185,9 +221,11 @@ void Scores::calculateManyConsecutiveHoursScore(std::vector<IntervalEntry> & sor
     size_t length = (currentInterval.endTime.valueInMinutes() - currentInterval.startTime.valueInMinutes());
     size_t hours = length / 60;
     if (hours > p.penaliseManyConsecutiveHours) {
-        manyConsecutiveHours += hours;
+        manyConsecutiveHours += (length - p.penaliseManyConsecutiveHours * 60);
     }
 }
+
+#define SCORE_CALCULATION_WRONGSTARTTIMEDEFAULT 60
 
 void Scores::calculateWrongStartTimesScore(std::vector<IntervalEntry> & sortedIntervals, const Priorities & p) {
 
@@ -198,8 +236,9 @@ void Scores::calculateWrongStartTimesScore(std::vector<IntervalEntry> & sortedIn
                 continue;
             }
 
-            if (it->first.startTime.hour < p.penaliseBeforeHour) {
-                wrongStartTimes++;
+            TimeInterval::TimeStamp penalisationTime(p.penaliseBeforeHour, 0);
+            if (it->first.startTime.valueInMinutes() <= penalisationTime.valueInMinutes()) {
+                wrongStartTimes += SCORE_CALCULATION_WRONGSTARTTIMEDEFAULT + (penalisationTime.valueInMinutes() - it->first.startTime.valueInMinutes());
             }
         }
     }
@@ -211,8 +250,9 @@ void Scores::calculateWrongStartTimesScore(std::vector<IntervalEntry> & sortedIn
                 continue;
             }
 
-            if (it->first.startTime.hour > p.penaliseAfterHour) {
-                wrongStartTimes++;
+            TimeInterval::TimeStamp penalisationTime(p.penaliseAfterHour, 0);
+            if (it->first.startTime.valueInMinutes() >= penalisationTime.valueInMinutes()) {
+                wrongStartTimes += SCORE_CALCULATION_WRONGSTARTTIMEDEFAULT + (it->first.startTime.valueInMinutes() - penalisationTime.valueInMinutes());
             }
         }
     }
