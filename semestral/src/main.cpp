@@ -18,14 +18,9 @@
 #include <vector>
 #include <string>
 
-// Length of visual separator on output
-#define SEPARATOR_LENGTH 80
-
-// Multiplier of generation size (multiplies genome size)
-#define GENERATION_SIZE_MULTIPLIER 4
-
-// Default count of generations
-#define GENERATION_COUNT 100
+#define SEPARATOR_LENGTH 80 //!< Length of visual separator on output
+#define GENERATION_SIZE_MULTIPLIER 4 //!< Multiplier of generation size (multiplies genome size)
+#define GENERATION_COUNT 100 //!< Default count of generations
 
 
 /**

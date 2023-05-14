@@ -111,7 +111,7 @@ size_t Evolution::getGenomeSize() const {
     return genomeSize;
 }
 
-void Evolution::selection(std::vector<Genome> & newGeneration, size_t generationSize) {
+void Evolution::selection(std::vector<Genome> & newGeneration, size_t generationSize) const {
 
     // Keep track of maximum and minimum of reached scores
     Scores minValues;
@@ -162,7 +162,7 @@ void Evolution::selection(std::vector<Genome> & newGeneration, size_t generation
     std::swap(newGeneration, result);
 }
 
-Scores Evolution::score(const Genome & genome) {
+Scores Evolution::score(const Genome & genome) const {
 
     // Get all intervals and sort them by start time
     using IntervalEntry = std::pair<TimeInterval, std::shared_ptr<Entry>>;
@@ -186,7 +186,7 @@ Scores Evolution::score(const Genome & genome) {
     return result;
 }
 
-bool Evolution::mutate(Genome & genome) {
+bool Evolution::mutate(Genome & genome) const {
     // Generate random number and calculate if mutation will be performed
     size_t flag = randomNumber(EVOLUTION_MUTATION_ONE_IN);
     if (flag != 0) {

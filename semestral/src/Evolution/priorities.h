@@ -31,7 +31,7 @@ struct Priorities {
     uint8_t penaliseManyConsecutiveHours; // If desabled set to zero
     uint8_t penaliseAfterHour; // If disabled set to zero
 
-    unsigned int minutesToBeConsecutive; // Minutes needed for intervals to be consecutive (default 30)
+    unsigned int minutesToBeConsecutive; //!< Minutes needed for intervals to be consecutive (default 30)
 
     Priorities();
 
@@ -55,12 +55,12 @@ using IntervalEntry = std::pair<TimeInterval, std::shared_ptr<Entry>>;
  *
  */
 struct Scores {
-    double coherentInDay; // Amount of incoherent parts in days
-    double coherentInWeek; // Length of week (from first entry to last)
-    double collisions; // Amount of collisions
-    double manyConsecutiveHours; // Number of minutes over the preferred limit of consecutive hours
-    double wrongStartTimes; // Minutes for start times after or before preferred limits
-    double bonuses; // Sum of bonuses in selected Entries
+    double coherentInDay; //!< Amount of incoherent parts in days
+    double coherentInWeek; //!< Length of week (from first entry to last)
+    double collisions; //!< Amount of collisions
+    double manyConsecutiveHours; //!< Number of minutes over the preferred limit of consecutive hours
+    double wrongStartTimes; //!< Minutes for start times after or before preferred limits
+    double bonuses; //!< Sum of bonuses in selected Entries
 
     Scores();
 

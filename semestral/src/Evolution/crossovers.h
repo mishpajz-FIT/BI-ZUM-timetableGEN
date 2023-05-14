@@ -19,11 +19,9 @@
 #include <exception>
 #include <set>
 
-// Type for random number
-#define RANDOM_CROSSOVER_NUMBER_TYPE uint32_t
 
-// Size o type for random number
-#define RANDOM_CROSSOVER_NUMBER_SIZE 32
+#define RANDOM_CROSSOVER_NUMBER_TYPE uint32_t //!< Type for random number
+#define RANDOM_CROSSOVER_NUMBER_SIZE 32 //!< Size of type for random number
 
 /**
  * @brief Genome
@@ -63,7 +61,7 @@ struct Crossover {
      * @param rParent parent genome
      * @return Genome child genome
      */
-    virtual Genome perform(const Genome & lParent, const Genome & rParent) = 0;
+    virtual Genome perform(const Genome & lParent, const Genome & rParent) const = 0;
 
 protected:
 
@@ -76,7 +74,7 @@ protected:
      * @param rParent parent genome
      * @return size_t genome length
      */
-    size_t genomeCheck(const Genome & lParent, const Genome & rParent);
+    size_t genomeCheck(const Genome & lParent, const Genome & rParent) const;
 
     /**
      * @brief Random number
@@ -94,7 +92,7 @@ protected:
  */
 struct UniformCrossover : Crossover {
 
-    Genome perform(const Genome & lParent, const Genome & rParent) override;
+    Genome perform(const Genome & lParent, const Genome & rParent) const override;
 };
 
 /**
@@ -128,7 +126,7 @@ public:
      * @param rParent parent genome
      * @return Genome child genome
      */
-    Genome perform(const Genome & lParent, const Genome & rParent) override;
+    Genome perform(const Genome & lParent, const Genome & rParent) const override;
 };
 
 #endif /* CROSSOVERS_H */

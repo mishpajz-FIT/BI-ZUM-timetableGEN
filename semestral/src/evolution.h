@@ -113,7 +113,7 @@ private:
      * @param[inout] newGeneration generation
      * @param generationSize desired size of generation
      */
-    void selection(std::vector<Genome> & newGeneration, size_t generationSize);
+    void selection(std::vector<Genome> & newGeneration, size_t generationSize) const;
 
     /**
      * @brief Score given genome
@@ -121,7 +121,7 @@ private:
      * @param genome genome to be scored
      * @return Scores score of genome
      */
-    Scores score(const Genome & genome);
+    Scores score(const Genome & genome) const;
 
     /**
      * @brief Mutate given genome
@@ -132,7 +132,7 @@ private:
      * @return true genome was mutated
      * @return false genmoe was mutated
      */
-    bool mutate(Genome & genome);
+    bool mutate(Genome & genome) const;
 
     /**
      * @brief Create initial generation

@@ -6,7 +6,7 @@ const char * CrossoverException::what() const noexcept {
     return msg.c_str();
 }
 
-size_t Crossover::genomeCheck(const Genome & lParent, const Genome & rParent) {
+size_t Crossover::genomeCheck(const Genome & lParent, const Genome & rParent) const {
     if (lParent.size() != rParent.size()) {
         throw CrossoverException("Crossover got parents with different genome lengths.");
     }
@@ -22,7 +22,7 @@ RANDOM_CROSSOVER_NUMBER_TYPE Crossover::randomNumber() {
     return distribution(rng);
 }
 
-Genome UniformCrossover::perform(const Genome & lParent, const Genome & rParent) {
+Genome UniformCrossover::perform(const Genome & lParent, const Genome & rParent) const {
     size_t genomeSize = genomeCheck(lParent, rParent);
 
     Genome descendant; // Child
@@ -58,7 +58,7 @@ PointCrossover::PointCrossover(size_t k) : Crossover(), points(k) {
     }
 }
 
-Genome PointCrossover::perform(const Genome & lParent, const Genome & rParent) {
+Genome PointCrossover::perform(const Genome & lParent, const Genome & rParent) const {
     size_t genomeSize = genomeCheck(lParent, rParent);
 
     if (points >= genomeSize) {

@@ -35,15 +35,15 @@ struct Course;
  */
 struct Entry {
 private:
-    double bonus; // Bonus or mallus indicating if this entry is desired in the timetable
+    double bonus; //!< Bonus or mallus indicating if this entry is desired in the timetable
 
 public:
-    uint32_t id; // Id of entry, (doesnt have to be unique)
-    std::string additionalInformation; // All additional infromation for entry
-    std::vector<TimeInterval> timeslots; // Timeslots of this entry (entry can have multiple timeslots)
+    uint32_t id; //!< Id of entry, (doesnt have to be unique)
+    std::string additionalInformation; //!< All additional infromation for entry
+    std::vector<TimeInterval> timeslots; //!< Timeslots of this entry (entry can have multiple timeslots)
 
-    std::weak_ptr<Schedule> schedule; // Schedule this entry belongs to
-    size_t indexInSchedule; // Index this entry has in the schedule it belongs to
+    std::weak_ptr<Schedule> schedule; //!< Schedule this entry belongs to
+    size_t indexInSchedule; //!< Index this entry has in the schedule it belongs to
 
     /**
      * @brief Get bonus value of this entry
