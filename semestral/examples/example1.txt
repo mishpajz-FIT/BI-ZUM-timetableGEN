@@ -1,0 +1,434 @@
+BI-AAG
+1
+Přednáška
+208/240
+út 12:45 - 14:15
+Jan Holub
+TK:BS
+1
+Cvičení
+24/24
+út 14:30 - 16:00
+Filip Gregor
+T9:302
+2
+Cvičení
+24/24
+út 16:15 - 17:45
+Štěpán Plachý
+TH:A-942
+3
+Cvičení
+21/24
+út 18:00 - 19:30
+Lucie Procházková
+TH:A-942
+4
+Cvičení
+22/24
+po 18:00 - 19:30
+Lucie Procházková
+T9:302
+5
+Cvičení
+24/24
+st 09:15 - 10:45
+Tomáš Pecka
+TH:A-1247
+6
+Cvičení
+24/24
+st 11:00 - 12:30
+Tomáš Pecka
+TH:A-1247
+7
+Cvičení
+24/24
+čt 12:45 - 14:15
+Martin Svoboda
+T9:301
+8
+Cvičení
+24/24
+čt 14:30 - 16:00
+Martin Svoboda
+T9:301
+9
+Cvičení
+24/24
+čt 16:15 - 17:45
+Martin Svoboda
+T9:301
+2
+Přednáška
+166/240
+út 16:15 - 17:45
+Jan Janoušek
+TK:BS
+10
+Cvičení
+22/24
+čt 18:00 - 19:30
+Martin Svoboda
+T9:301
+11
+Cvičení
+24/24
+čt 14:30 - 16:00
+Eliška Šestáková
+TH:A-1442
+12
+Cvičení
+24/24
+čt 16:15 - 17:45
+Eliška Šestáková
+TH:A-1442
+13
+Cvičení
+24/24
+čt 18:00 - 19:30
+Eliška Šestáková
+TH:A-1442
+15
+Cvičení
+24/24
+pá 14:30 - 16:00
+Eliška Šestáková
+T9:346
+16
+Cvičení
+24/24
+pá 16:15 - 17:45
+Eliška Šestáková
+T9:346
+17
+Cvičení
+24/24
+pá 18:00 - 19:30
+Eliška Šestáková
+T9:346
+
+BI-AG1
+1
+Přednáška
+239/240
+po 09:15 - 10:45
+Tomáš Valla
+TK:BS
+1
+Cvičení
+24/24
+po 11:00 - 12:30
+Michal Dvořák
+T9:301
+2
+Cvičení
+24/24
+po 11:00 - 12:30
+Ondřej Šofr
+T9:347
+3
+Cvičení
+24/24
+po 12:45 - 14:15
+Michal Dvořák
+T9:301
+4
+Cvičení
+24/24
+po 12:45 - 14:15
+Ondřej Šofr
+T9:347
+5
+Cvičení
+24/24
+po 14:30 - 16:00
+Xuan Thang Nguyen
+T9:347
+6
+Cvičení
+24/24
+po 14:30 - 16:00
+Michal Opler
+TH:A-1442
+7
+Cvičení
+24/24
+po 16:15 - 17:45
+Martin Slávik
+T9:347
+8
+Cvičení
+22/24
+po 16:15 - 17:45
+Michal Opler
+TH:A-1442
+9
+Cvičení
+24/24
+po 18:00 - 19:30
+Martin Slávik
+T9:347
+10
+Cvičení
+23/24
+po 18:00 - 19:30
+Jan Matyáš Křišťan
+TH:A-1442
+2
+Přednáška
+212/240
+po 16:15 - 17:45
+Dušan Knop
+TK:BS
+11
+Cvičení
+23/24
+út 11:00 - 12:30
+Tomáš Valla
+T9:347
+12
+Cvičení
+24/24
+st 16:15 - 17:45
+Radek Hušek
+T9:302
+13
+Cvičení
+24/24
+st 18:00 - 19:30
+Radek Hušek
+T9:302
+14
+Cvičení
+21/24
+čt 07:30 - 09:00
+Vojtěch Rozhoň
+T9:346
+15
+Cvičení
+22/24
+čt 07:30 - 09:00
+Dušan Knop
+TH:A-1247
+16
+Cvičení
+24/24
+čt 09:15 - 10:45
+Xuan Thang Nguyen
+T9:347
+17
+Cvičení
+24/24
+čt 09:15 - 10:45
+Dušan Knop
+TH:A-1247
+18
+Cvičení
+13/24
+pá 07:30 - 09:00
+Michal Opler
+T9:346
+19
+Cvičení
+24/24
+pá 09:15 - 10:45
+Daniel Král
+TH:A-1247
+20
+Cvičení
+21/24
+pá 11:00 - 12:30
+Michal Opler
+T9:346
+
+BI-FEM
+1
+Přednáška
+47/48
+po 11:00 - 12:30
+Pavla Vozárová
+TH:A-s135
+101
+Cvičení
+24/24
+po 12:45 - 14:15
+Pavla Vozárová
+T9:343
+102
+Cvičení
+23/24
+út 09:15 - 10:45
+Pavla Vozárová
+T9:343
+
+BI-MA2
+1
+Přednáška
+203/204
+po 14:30 - 16:00
+út 16:15 - 17:45
+(týden: Sudý)
+Tomáš Kalvoda
+T9:155
+1
+Cvičení
+20/24
+po 09:15 - 10:45
+Jan Valdman
+T9:302
+2
+Cvičení
+24/24
+po 14:30 - 16:00
+Petr Olšák
+TH:A-1242
+3
+Cvičení
+24/24
+po 16:15 - 17:45
+Petr Olšák
+TH:A-1242
+4
+Cvičení
+7/24
+út 07:30 - 09:00
+Jan Valdman
+T9:347
+5
+Cvičení
+24/24
+út 09:15 - 10:45
+Jan Valdman
+T9:347
+6
+Cvičení
+24/24
+út 14:30 - 16:00
+Tomáš Kalvoda
+T9:347
+7
+Cvičení
+6/24
+st 07:30 - 09:00
+Pavel Paták
+T9:301
+8
+Cvičení
+24/24
+st 09:15 - 10:45
+Pavel Paták
+T9:301
+9
+Cvičení
+23/24
+st 11:00 - 12:30
+Jan Starý
+TH:A-1242
+10
+Cvičení
+23/24
+st 12:45 - 14:15
+Jan Starý
+TH:A-1242
+11
+Cvičení
+24/24
+st 16:15 - 17:45
+Jan Starý
+T9:301
+14
+Cvičení
+24/24
+čt 09:15 - 10:45
+Petr Olšák
+TH:A-1242
+15
+Cvičení
+24/24
+čt 11:00 - 12:30
+Pavel Hrabák
+TH:A-1247
+16
+Cvičení
+17/24
+pá 09:15 - 10:45
+Jan Starý
+T9:301
+17
+Cvičení
+23/24
+pá 11:00 - 12:30
+Jan Starý
+T9:301
+2
+Přednáška
+103/204
+út 11:00 - 12:30
+st 09:15 - 10:45
+(týden: Lichý)
+Pavel Hrabák
+TK:BS
+
+BI-PRR
+1
+Přednáška
+59/60
+st 18:00 - 19:30
+David Pešek
+TH:A-s135
+101
+Cvičení
+19/20
+út 18:00 - 19:30
+David Pešek
+T9:301
+102
+Cvičení
+20/20
+st 14:30 - 16:00
+David Pešek
+T9:343
+103
+Cvičení
+20/20
+st 16:15 - 17:45
+David Pešek
+T9:343
+
+BI-UKB
+1
+Přednáška
+95/96
+st 08:15 - 10:45
+Simona Fornůsek
+Tomáš Luňák
+T9:155
+101
+Cvičení
+23/24
+po 18:00 - 19:30
+(týden: Sudý)
+David Pokorný
+T9:351
+102
+Cvičení
+24/24
+čt 14:30 - 16:00
+(týden: Sudý)
+Tomáš Rabas
+T9:348
+103
+Cvičení
+24/24
+po 18:00 - 19:30
+(týden: Lichý)
+David Pokorný
+T9:351
+104
+Cvičení
+24/24
+st 18:00 - 19:30
+(týden: Lichý)
+Tomáš Rabas
+T9:350
