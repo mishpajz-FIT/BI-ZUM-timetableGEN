@@ -53,7 +53,7 @@ The application is currently designed for **generating timetables at FIT Czech T
 After launching the application, a prompt will appear to enter the path to the file with the time entries information.
 
 The application uses a parser to process the input and extract the entries data. The parser can handle tables of parallels copied from the course page in the new KOS system (in Czech language) in text format. (again, other forms of input or other parsers are not included, but it is relatively easy to add them).
-![](resources/kostable.png)
+![](resources/media/paralleltable.png)
 
 #### File preprocessing
 
