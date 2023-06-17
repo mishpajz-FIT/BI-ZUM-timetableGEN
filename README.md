@@ -29,18 +29,42 @@ The resulting timetable must contain one entry for each schedule of each course.
 
 ### Prerequisites
 
+<details open>
+<summary>Native</summary>
+<br>
 - C++ compiler (g++)
 - Make
 - *(If documentation is needed)* Doxygen
+</details>
 
-### Compiling
+<details>
+<summary>Dockerised</summary>
+<br>
+- Docker
+</details>
 
+### Compiling and running
+
+<details open>
+<summary>Native</summary>
+<br>
 1. Clone or download the repository
-2. Navigate to the projects root directory
+2. Navigate to the project's root directory
 3. Run `make` to compile the project, a binary will be created in *./bin/timetablegen* directory
 4. Execute the binary
 
 *(If documentation is needed)* Run `make doc`, which will create documentation in *./doc* directory using Doxygen in HTML format.
+</details>
+
+<details>
+<summary>Dockerised</summary>
+<br>
+1. Clone or download the repository
+2. Navigate to the project's root directory
+3. Run `docker build -t timetablegen .` to build the image
+4. Create a *data* directory, which will contain input files
+5. Run the image by `docker run -it --rm -v ./data:/data timetablegen`, the data directory will be mounted to the container as a volume, threfore every file in the `./data` directory will be reachable in */data* directory in the container
+</details>
 
 ## Usage
 
