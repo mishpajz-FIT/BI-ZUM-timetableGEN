@@ -1,8 +1,5 @@
 #include "evolution.h"
 
-// Width of progress bar
-#define EVOLUTION_PROGRESS_BAR_WIDTH 50
-
 // For each N genes a new k-point crossover divider to be created
 #define EVOLUTION_POINT_CROSSOVER_DIVIDER 10
 
@@ -12,13 +9,14 @@
 // For each N genes a mutation should be called again
 #define EVOLUTION_MUTATION_DIVIDER 25
 
-Evolution::Evolution(const Semester & s, const Priorities & p) :
+Evolution::Evolution(const Semester & s, const Priorities & p, std::function<void(size_t, size_t)> proc) :
     semester(s),
     priorities(p),
     genomeSize(0),
     genomeIndexToSchedule(),
     courseAndScheduleToGenomeIndex(),
-    crossovers() {
+    crossovers(),
+    processing(proc) {
 
     // Copy all schedules from semester for easier conversion from genome index
     genomeIndexToSchedule = s.schedulePtrs;
@@ -42,7 +40,7 @@ Evolution::Evolution(const Semester & s, const Priorities & p) :
     }
 }
 
-std::vector<EvolutionResult> Evolution::evolve(size_t generationSize, size_t maxGenerations, bool verbal) {
+std::vector<EvolutionResult> Evolution::evolve(size_t generationSize, size_t maxGenerations) {
 
     if (generationSize == 0 || maxGenerations == 0) {
         throw std::invalid_argument("Generation counts can't be zero.");
@@ -50,14 +48,10 @@ std::vector<EvolutionResult> Evolution::evolve(size_t generationSize, size_t max
 
     std::vector<Genome> currentGeneration = createInitialGenerations(generationSize);
 
-    if (verbal) {
-        std::cout << "Evolution:" << std::endl;
-    }
-
     for (size_t gen = 0; gen < maxGenerations; gen++) { // Iterate through generations
 
-        if (verbal) {
-            loadingBar(std::cout, gen, maxGenerations);
+        if (processing != nullptr) {
+            processing(gen, maxGenerations);
         }
 
         // Create new generation of size generation size * generation size
@@ -217,23 +211,6 @@ std::vector<Genome> Evolution::createInitialGenerations(size_t generationSize) c
     }
 
     return result;
-}
-
-void Evolution::loadingBar(std::ostream & stream, size_t value, size_t maxValue) const {
-    // Calculate percentage and position on screen up to which should be displayed completed characters
-    size_t percentage = (value * 100) / maxValue;
-    size_t position = (EVOLUTION_PROGRESS_BAR_WIDTH * percentage) / 100;
-
-    stream << "[";
-    for (size_t i = 0; i < EVOLUTION_PROGRESS_BAR_WIDTH; i++) {
-        if (i < position) { // Print characters for completed and uncompleted part
-            stream << "#";
-        } else {
-            stream << " ";
-        }
-    }
-    stream << "] " << percentage << "%\r"; // Use \r to return to the beggining of line (so it can be overwritten)
-    stream.flush();
 }
 
 size_t Evolution::randomNumber(size_t maxValue) {

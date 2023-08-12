@@ -21,7 +21,7 @@
 #define SEPARATOR_LENGTH 80 //!< Length of visual separator on output
 #define GENERATION_SIZE_MULTIPLIER 4 //!< Multiplier of generation size (multiplies genome size)
 #define GENERATION_COUNT 100 //!< Default count of generations
-
+#define EVOLUTION_PROGRESS_BAR_WIDTH 50 //!< Width of evolution progress bar
 
 /**
  * @brief Checks the stdin for failure
@@ -123,6 +123,34 @@ Priorities loadPriorities(std::string & logo, Semester & semester) {
 }
 
 /**
+ * @brief Print evolution progress bar to stream
+ *
+ * Progress bar rewrites itself. (The cursor is returned at beggining after
+ * writing the progress bar).
+ *
+ * This function should be passed to the evolution algorithm.
+ *
+ * @param value current value
+ * @param maxValue max value that will be reached (value that means 100%)
+ */
+void evolutionLoadingBar(size_t value, size_t maxValue) {
+    // Calculate percentage and position on screen up to which should be displayed completed characters
+    size_t percentage = (value * 100) / maxValue;
+    size_t position = (EVOLUTION_PROGRESS_BAR_WIDTH * percentage) / 100;
+
+    std::cout << "[";
+    for (size_t i = 0; i < EVOLUTION_PROGRESS_BAR_WIDTH; i++) {
+        if (i < position) { // Print characters for completed and uncompleted part
+            std::cout << "#";
+        } else {
+            std::cout << " ";
+        }
+    }
+    std::cout << "] " << percentage << "%\r"; // Use \r to return to the beggining of line (so it can be overwritten)
+    std::cout.flush();
+}
+
+/**
  * @brief Generates a timetable and outputs result to standard output
  *
  * Function prompts the user to enter the number of generations to use.
@@ -135,7 +163,7 @@ void evolve(std::string & logo, Semester & semester, Priorities & priorities) {
     std::cout << "\033[1;1H\033[2J" << std::endl; // Clean console
 
     // Create evolution and calculate generation size
-    Evolution evolution(semester, priorities);
+    Evolution evolution(semester, priorities, evolutionLoadingBar);
     size_t generationSize = evolution.getGenomeSize() * GENERATION_SIZE_MULTIPLIER;
 
     std::cin.ignore(); // Clear previous character stuck in cin

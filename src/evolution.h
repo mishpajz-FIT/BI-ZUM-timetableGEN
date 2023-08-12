@@ -68,6 +68,9 @@ class Evolution {
 
     std::vector<std::unique_ptr<Crossover>> crossovers; // Crossover operators
 
+    std::function<void(size_t, size_t)> processing; // Function to be called after every stage of evolution
+    // first parameter is current progress value, second is max value
+
 public:
 
     Evolution() = delete;
@@ -77,8 +80,13 @@ public:
      *
      * @param s semester for which a timetable will be generated
      * @param p priorities for timetable generation
+     * @param proc function to be called after every stage of evolution,
+     * where first parameter is current progress value, second is max value
      */
-    Evolution(const Semester & s, const Priorities & p);
+    Evolution(
+        const Semester & s,
+        const Priorities & p,
+        std::function<void(size_t, size_t)> proc = nullptr);
 
     ~Evolution() = default;
 
@@ -89,10 +97,9 @@ public:
      *
      * @param generationSize size of generations
      * @param maxGenerations number of generations
-     * @param verbal progress output to standard output
      * @return std::vector<EvolutionResult> generated timetable (vector of selected Entries for each Course and its Schedule)
      */
-    std::vector<EvolutionResult> evolve(size_t generationSize = 100, size_t maxGenerations = 100, bool verbal = true);
+    std::vector<EvolutionResult> evolve(size_t generationSize = 100, size_t maxGenerations = 100);
 
     /**
      * @brief Get size of genome
@@ -143,18 +150,6 @@ private:
      * @return std::vector<Genome> initial generation
      */
     std::vector<Genome> createInitialGenerations(size_t generationSize) const;
-
-    /**
-     * @brief Print loading bar to stream
-     *
-     * Progress bar rewrites itself. (The cursor is returned at beggining after
-     * writing the progress bar).
-     *
-     * @param stream stream where progress bar should be outputted
-     * @param value current value
-     * @param maxValue max value that will be reached (value that means 100%)
-     */
-    void loadingBar(std::ostream & stream, size_t value, size_t maxValue) const;
 
     /**
      * @brief Random number
