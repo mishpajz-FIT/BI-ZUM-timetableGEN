@@ -78,13 +78,25 @@ private:
     void adjustValue(const std::string & infoText, T & value);
 
     /**
+     * @brief Make choice of element in vector from standard input
+     *
+     * @tparam T type of element in vector
+     * @param choices vector of choices
+     * @param badValue bad value to be returned if not successful
+     * @return std::pair<T, StdinAdjuster::ReturnStatus>
+     * retrieved value, status (GOOD on success, BAD on failure, QUIT if user wishes to quit)
+     */
+    template <typename T>
+    std::pair<T, StdinAdjuster::ReturnStatus> choiceRetriever(std::vector<T> choices, const T & badValue);
+
+    /**
      * @brief Select and retrieve course from semester
      *
      * @param semester semester to choose course from
-     * @return std::pair<std::shared_ptr<Course>, StdinAdjuster::ReturnStatus>
-     * pointer to course (or nullptr), status (GOOD on success, BAD on failure, QUIT if user wishes to quit)
+     * @return std::pair<std::string StdinAdjuster::ReturnStatus>
+     * name of course, status (GOOD on success, BAD on failure, QUIT if user wishes to quit)
      */
-    std::pair<std::shared_ptr<Course>, StdinAdjuster::ReturnStatus> retrieveCourse(Semester & semester);
+    std::pair<std::string, StdinAdjuster::ReturnStatus> retrieveCourse(Semester & semester);
 
     /**
      * @brief Select and retrieve schedule from course
@@ -93,7 +105,9 @@ private:
      * @return std::pair<std::shared_ptr<Schedule>, StdinAdjuster::ReturnStatus>
      * pointer to schedule (or nullptr), status (GOOD on success, BAD on failure, QUIT if user wishes to quit)
      */
-    std::pair<std::shared_ptr<Schedule>, StdinAdjuster::ReturnStatus> retrieveSchedule(std::shared_ptr<Course> & course);
+    std::pair<std::shared_ptr<Schedule>, StdinAdjuster::ReturnStatus> retrieveSchedule(
+        Semester & semester,
+        const std::string & course);
 
     /**
      * @brief Select and retrieve entry from schedule

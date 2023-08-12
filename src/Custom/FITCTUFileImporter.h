@@ -61,10 +61,10 @@ protected:
         Additional,
     };
 
-    std::map<std::string, TimeInterval::Day> dayMapping; // Mapping of day names
-    std::regex capacityRegex; // Regex for reading capacity
-    std::regex timeRegex; // Regex for reading time
-    std::map<std::string, TimeInterval::Parity> parityMapping; // Mapping for parity
+    std::map<std::string, TimeInterval::Day> dayMapping; //!< Mapping of day names
+    std::regex capacityRegex; //!< Regex for reading capacity
+    std::regex timeRegex; //!< Regex for reading time
+    std::map<std::string, TimeInterval::Parity> parityMapping; //!< Mapping for parity
 
 };
 

@@ -20,9 +20,10 @@ Semester FITCTUFileImporter::load() {
     FITCTUFileImporter::ReadingStates state = ReadingStates::Course;
 
     // Allocate initial structures
-    std::shared_ptr<Course> currentCourse(new Course());
-    std::shared_ptr<Schedule> currentSchedule(new Schedule(currentCourse));
-    std::shared_ptr<Entry> currentEntry(new Entry(0, currentSchedule));
+    std::string currentCourseName;
+    std::map<std::string, std::shared_ptr<Schedule>> schedulesInCourse;
+    std::shared_ptr<Schedule> currentSchedule;
+    std::shared_ptr<Entry> currentEntry(new Entry());
     bool addedCourseToResult = false;
 
     std::string line;
@@ -36,11 +37,15 @@ Semester FITCTUFileImporter::load() {
             if (state == ReadingStates::Id) { // If reading ID and encontering 
             // empty line, change reading state to course
             // Threfore before file should contain empty lines before each new course
-                result.coursesPtrs.push_back(currentCourse);
-                currentCourse = std::make_shared<Course>();
-                currentSchedule = std::make_shared<Schedule>(currentCourse);
-                currentEntry = std::make_shared<Entry>(0, currentSchedule);
+                for (auto & schedule : schedulesInCourse) {
+                    schedule.second->course = currentCourseName;
+                    result.schedulePtrs.push_back(schedule.second);
+                }
+                schedulesInCourse.clear();
+                currentCourseName.clear();
+                currentSchedule.reset();
                 addedCourseToResult = true;
+                currentEntry = std::make_shared<Entry>();
 
                 state = ReadingStates::Course;
             }
@@ -52,13 +57,13 @@ Semester FITCTUFileImporter::load() {
         switch (state) {
             case ReadingStates::Course: { // Parse course name and set it to course structure
                     addedCourseToResult = false;
-                    currentCourse->name = line;
+                    currentCourseName = line;
                     state = ReadingStates::Id;
                     break;
                 }
             case ReadingStates::Id: { // Parse entry ID and set it to entry structure
                     try {
-                        currentEntry->id = std::stoul(line);
+                        currentEntry->legibleIdentifier = "id=" + line;
                     }
                     catch (...) {
                         std::string exceptionMessage("Wrong format of ID in file: line ");
@@ -69,12 +74,12 @@ Semester FITCTUFileImporter::load() {
                 }
             case ReadingStates::Schedule: { // Read schedule the entry belongs to
 
-                    // If course doesnt contain this structure, allocate it
-                    if (!currentCourse->schedulesPtrs.contains(line)) {
-                        currentCourse->schedulesPtrs[line] = std::make_shared<Schedule>(currentCourse, line);
+                    // If course doesnt contain this schedule, allocate it
+                    if (!schedulesInCourse.contains(line)) {
+                        schedulesInCourse[line] = std::make_shared<Schedule>(line);
                     }
                     // Set current schedule to schedule with this name
-                    currentSchedule = currentCourse->schedulesPtrs[line];
+                    currentSchedule = schedulesInCourse[line];
 
                     state = ReadingStates::Capacity;
                     break;
@@ -155,7 +160,7 @@ Semester FITCTUFileImporter::load() {
                         currentSchedule->entriesPtrs.push_back(currentEntry);
 
                         // Allocate new, clean entry structure
-                        currentEntry = std::make_shared<Entry>(0, currentSchedule);
+                        currentEntry = std::make_shared<Entry>();
                         state = ReadingStates::Id;
                     }
                 }
@@ -170,7 +175,10 @@ Semester FITCTUFileImporter::load() {
     // Add last course to semester in case the file didn't end with an empty line
     // threfore it hasn't been added yet
     if (!addedCourseToResult) {
-        result.coursesPtrs.push_back(currentCourse);
+        for (auto & schedule : schedulesInCourse) {
+            schedule.second->course = currentCourseName;
+            result.schedulePtrs.push_back(schedule.second);
+        }
     }
 
     return result;

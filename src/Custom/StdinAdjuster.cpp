@@ -136,94 +136,93 @@ void StdinAdjuster::adjustValue(const std::string & infoText, T & value) {
     }
 }
 
-std::pair<std::shared_ptr<Course>, StdinAdjuster::ReturnStatus>
+template <typename T>
+std::pair<T, StdinAdjuster::ReturnStatus>
+StdinAdjuster::choiceRetriever(std::vector<T> choices, const T & badValue) {
+
+    // Retrieve input
+    unsigned int choice;
+    std::cin >> choice;
+
+    // Validate input
+    if (checkInputForFail()) {
+        return std::make_pair(badValue, StdinAdjuster::ReturnStatus::BAD);
+    }
+
+    if (choice == 0) {
+        return std::make_pair(badValue, StdinAdjuster::ReturnStatus::QUIT);
+    }
+
+    choice--;
+    if (choice >= choices.size()) {
+        std::cout << "\033[1;1H\033[2J" << std::endl; // Clean console
+        std::cout << "(!) Unknown choice.\n";
+        return std::make_pair(badValue, StdinAdjuster::ReturnStatus::BAD);
+    }
+
+    return std::make_pair(choices[choice], StdinAdjuster::ReturnStatus::GOOD);
+}
+
+std::pair<std::string, StdinAdjuster::ReturnStatus>
 StdinAdjuster::retrieveCourse(Semester & semester) {
+    // Get all existing courses from semester's schedules
+    std::set<std::string> uniqueCourses;
+    for (auto & schedule : semester.schedulePtrs) {
+        uniqueCourses.insert(schedule->course);
+    }
+    std::vector<std::string> courses(uniqueCourses.begin(), uniqueCourses.end());
+
     // Print header
     std::cout << "\nChoose a course to adjust:\n";
-    for (size_t i = 0; i < semester.coursesPtrs.size(); i++) {
-        std::cout << "\t" << i + 1 << ") " << semester.coursesPtrs[i]->name << "\n";
+    for (size_t i = 0; i < courses.size(); i++) {
+        std::cout << "\t" << i + 1 << ") " << courses[i] << "\n";
     }
     std::cout << "or '0' to exit.\n";
     std::cout << std::string(STDIN_ADJUSTER_SEPARATOR_LENGTH, '_') << std::endl;
 
-    // Retrieve input
-    unsigned int courseChoice;
-    std::cin >> courseChoice;
-
-    // Validate input
-    if (checkInputForFail()) {
-        return std::make_pair(nullptr, StdinAdjuster::ReturnStatus::BAD);
-    }
-
-    if (courseChoice == 0) {
-        return std::make_pair(nullptr, StdinAdjuster::ReturnStatus::QUIT);
-    }
-
-    courseChoice -= 1;
-    if (courseChoice >= semester.coursesPtrs.size()) {
-        std::cout << "\033[1;1H\033[2J" << std::endl; // Clean console
-        std::cout << "(!) Unknown choice.\n";
-        return std::make_pair(nullptr, StdinAdjuster::ReturnStatus::BAD);
-    }
-
-    return std::make_pair(semester.coursesPtrs[courseChoice], StdinAdjuster::ReturnStatus::GOOD);
+    // Select
+    return choiceRetriever<std::string>(courses, std::string());
 }
 
 std::pair<std::shared_ptr<Schedule>, StdinAdjuster::ReturnStatus>
-StdinAdjuster::retrieveSchedule(std::shared_ptr<Course> & course) {
+StdinAdjuster::retrieveSchedule(Semester & semester, const std::string & course) {
+    // Group schedules based on their course
+    std::map<std::string, std::vector<std::shared_ptr<Schedule>>> groupedSchedules;
+    for (auto & schedule : semester.schedulePtrs) {
+        groupedSchedules[schedule->course].push_back(schedule);
+    }
+
+    // Retrieve course schedules
+    if (!groupedSchedules.contains(course)) {
+        return std::make_pair(nullptr, StdinAdjuster::ReturnStatus::BAD);
+    }
+    std::vector<std::shared_ptr<Schedule>> schedules = groupedSchedules[course];
+
     // Print header
     std::cout << "\nChoose a schedule to adjust:\n";
-    for (auto & schedule : course->schedulesPtrs) {
-        std::cout << "\t" << schedule.first << "\n";
+    for (size_t i = 0; i < schedules.size(); i++) {
+        std::cout << "\t" << i + 1 << ") " << schedules[i]->name << "\n";
     }
-    std::cout << "or anything else to exit.\n";
+    std::cout << "or '0' to exit.\n";
     std::cout << std::string(STDIN_ADJUSTER_SEPARATOR_LENGTH, '_') << std::endl;
 
-    // Retrieve input
-    std::string scheduleChoice;
-    std::cin >> scheduleChoice;
-
-    // Validate input
-    if (checkInputForFail()) {
-        return std::make_pair(nullptr, StdinAdjuster::ReturnStatus::BAD);
-    }
-
-    if (!course->schedulesPtrs.contains(scheduleChoice)) {
-        std::cout << "\033[1;1H\033[2J" << std::endl; // Clean console
-        std::cout << "(!) Unknown choice.\n";
-        return std::make_pair(nullptr, StdinAdjuster::ReturnStatus::BAD);
-    }
-
-    return std::make_pair(course->schedulesPtrs[scheduleChoice], StdinAdjuster::ReturnStatus::GOOD);
+    // Select
+    return choiceRetriever<std::shared_ptr<Schedule>>(schedules, nullptr);
 }
 
 std::pair<std::shared_ptr<Entry>, StdinAdjuster::ReturnStatus>
 StdinAdjuster::retrieveEntry(std::shared_ptr<Schedule> & schedule) {
+    auto entries = schedule->entriesPtrs;
     // Print header
     std::cout << "Choose a entry to adjust:\n";
-    for (size_t i = 0; i < schedule->entriesPtrs.size(); i++) {
-        std::cout << "\t" << i + 1 << ") id: " << schedule->entriesPtrs[i]->id << "\n";
+    for (size_t i = 0; i < entries.size(); i++) {
+        std::cout << "\t" << i + 1 << ") " << entries[i]->legibleIdentifier << "\n";
     }
-    std::cout << "or anything else to exit.\n";
+    std::cout << "or '0' to exit.\n";
     std::cout << std::string(STDIN_ADJUSTER_SEPARATOR_LENGTH, '_') << std::endl;
 
-    // Retireve input
-    unsigned int entryChoice;
-    std::cin >> entryChoice;
-
-    // Validate input
-    if (checkInputForFail()) {
-        return std::make_pair(nullptr, StdinAdjuster::ReturnStatus::BAD);
-    }
-
-    entryChoice -= 1;
-    if (entryChoice >= schedule->entriesPtrs.size()) {
-        std::cout << "\033[1;1H\033[2J" << std::endl; // Clean console
-        std::cout << "(!) Unknown choice.\n";
-        return std::make_pair(nullptr, StdinAdjuster::ReturnStatus::BAD);
-    }
-
-    return std::make_pair(schedule->entriesPtrs[entryChoice], StdinAdjuster::ReturnStatus::GOOD);
+    // Select
+    return choiceRetriever<std::shared_ptr<Entry>>(entries, nullptr);
 }
 
 void StdinAdjuster::adjustBonuses(Semester & semester) {
@@ -233,7 +232,7 @@ void StdinAdjuster::adjustBonuses(Semester & semester) {
         std::cout << "Specify entries that should be prioritized or deprioritized in the timetable generation:\n";
 
         // Select course
-        std::pair<std::shared_ptr<Course>, StdinAdjuster::ReturnStatus> course = retrieveCourse(semester);
+        std::pair<std::string, StdinAdjuster::ReturnStatus> course = retrieveCourse(semester);
         if (course.second == StdinAdjuster::ReturnStatus::QUIT) {
             break;
         } else if (course.second == StdinAdjuster::ReturnStatus::BAD) {
@@ -241,7 +240,7 @@ void StdinAdjuster::adjustBonuses(Semester & semester) {
         }
 
         // Select schedule
-        std::pair<std::shared_ptr<Schedule>, StdinAdjuster::ReturnStatus> schedule = retrieveSchedule(course.first);
+        std::pair<std::shared_ptr<Schedule>, StdinAdjuster::ReturnStatus> schedule = retrieveSchedule(semester, course.first);
         if (schedule.second != StdinAdjuster::ReturnStatus::GOOD) {
             continue;
         }
@@ -299,7 +298,7 @@ void StdinAdjuster::adjustIgnored(Semester & semester) {
         std::cout << "Specify schedules that should not be considered in the timetable generation.\n";
 
         // Select course
-        std::pair<std::shared_ptr<Course>, StdinAdjuster::ReturnStatus> course = retrieveCourse(semester);
+        std::pair<std::string, StdinAdjuster::ReturnStatus> course = retrieveCourse(semester);
         if (course.second == StdinAdjuster::ReturnStatus::QUIT) {
             break;
         } else if (course.second == StdinAdjuster::ReturnStatus::BAD) {
@@ -307,7 +306,7 @@ void StdinAdjuster::adjustIgnored(Semester & semester) {
         }
 
         // Select schedule
-        std::pair<std::shared_ptr<Schedule>, StdinAdjuster::ReturnStatus> schedule = retrieveSchedule(course.first);
+        std::pair<std::shared_ptr<Schedule>, StdinAdjuster::ReturnStatus> schedule = retrieveSchedule(semester, course.first);
         if (schedule.second != StdinAdjuster::ReturnStatus::GOOD) {
             continue;
         }

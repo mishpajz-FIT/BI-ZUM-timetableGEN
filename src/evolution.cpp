@@ -20,16 +20,17 @@ Evolution::Evolution(const Semester & s, const Priorities & p) :
     courseAndScheduleToGenomeIndex(),
     crossovers() {
 
-    // Iterate through each Schedule, generate genome index to schedule conversion
-    // vector and course and schedule to genome index conversion and count genome size
-    size_t i = 0;
-    for (auto & coursePtr : s.coursesPtrs) {
-        for (auto & schedulePtr : coursePtr->schedulesPtrs) {
-            genomeIndexToSchedule.push_back(schedulePtr.second);
-            courseAndScheduleToGenomeIndex[std::make_pair(coursePtr->name, schedulePtr.first)] = i;
+    // Copy all schedules from semester for easier conversion from genome index
+    genomeIndexToSchedule = s.schedulePtrs;
 
-            i++;
-        }
+    // Iterate through each Schedule, generate course and schedule to genome 
+    // index conversion and count genome size
+    size_t i = 0;
+    for (auto & schedulePtr : genomeIndexToSchedule) {
+        EntryAddress address = std::make_pair(schedulePtr->course, schedulePtr->name);
+        courseAndScheduleToGenomeIndex[address] = i;
+
+        i++;
     }
     genomeSize = i;
 
@@ -96,10 +97,10 @@ std::vector<EvolutionResult> Evolution::evolve(size_t generationSize, size_t max
     Genome best = currentGeneration.front();
 
     // Convert genome to result
-    std::vector<EvolutionResult>result;
+    std::vector<EvolutionResult> result;
     for (size_t i = 0; i < genomeSize; i++) {
         std::shared_ptr<Schedule> schedule = genomeIndexToSchedule[i];
-        EntryAddress address = std::make_pair(schedule->course.lock()->name, schedule->name);
+        EntryAddress address = std::make_pair(schedule->course, schedule->name);
 
         result.emplace_back(std::make_pair(address, schedule->entriesPtrs[best[i]]));
     }

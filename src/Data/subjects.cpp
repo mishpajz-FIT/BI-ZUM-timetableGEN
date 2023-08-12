@@ -1,9 +1,16 @@
 #include "Data/subjects.h"
 
-
-Entry::Entry(size_t ix, const std::weak_ptr<Schedule> & parent, uint32_t id) :
+Entry::Entry() :
     bonus(0),
-    id(id),
+    legibleIdentifier(),
+    additionalInformation(),
+    timeslots(),
+    schedule(),
+    indexInSchedule(0) { }
+
+Entry::Entry(size_t ix, const std::weak_ptr<Schedule> & parent) :
+    bonus(0),
+    legibleIdentifier(),
     additionalInformation(),
     timeslots(),
     schedule(parent),
@@ -23,6 +30,6 @@ void Entry::setBonus(double value) {
     }
 }
 
-Schedule::Schedule(const std::weak_ptr<Course> & parent) : name(), course(parent), ignored(false) { }
+Schedule::Schedule() : name(), ignored(false) { }
 
-Schedule::Schedule(const std::weak_ptr<Course> & parent, const std::string & name) : name(name), course(parent), ignored(false) { }
+Schedule::Schedule(const std::string & name) : name(name), ignored(false) { }

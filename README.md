@@ -22,7 +22,7 @@ As such, the generator is intended to be used by FIT CTU students for scheduling
 
 The internal structure for representing courses is as follows: A semester is composed of several courses (e.g. "Programming and Algorithmization 1", "The Basics of Artificial Intelligence"...), each of these courses has several schedules (e.g. lectures, labs...) and each schedule has several entries (specific classes in a specific room).
 
-The resulting timetable must contain one entry for each schedule of each course. The process of generating a timetable is about selecting the appropriate entry for each schedule.
+The resulting timetable must contain one entry for each schedule. The process of generating a timetable is about selecting the appropriate entry for each schedule.
 
 
 ## Getting started

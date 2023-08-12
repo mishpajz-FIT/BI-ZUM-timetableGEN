@@ -38,7 +38,7 @@ private:
     double bonus; //!< Bonus or mallus indicating if this entry is desired in the timetable
 
 public:
-    uint32_t id; //!< Id of entry, (doesnt have to be unique)
+    std::string legibleIdentifier; //!< Legible identifier of this entry
     std::string additionalInformation; //!< All additional infromation for entry
     std::vector<TimeInterval> timeslots; //!< Timeslots of this entry (entry can have multiple timeslots)
 
@@ -64,11 +64,17 @@ public:
     /**
      * @brief Construct a new Entry object
      *
+     */
+    Entry();
+
+    /**
+     * @brief Construct a new Entry object
+     *
      * @param ix Index this entry has in the schedule it belongs to
      * @param parent Schedule this entry belongs to
      * @param id Id of entry, (doesnt have to be unique)
      */
-    Entry(size_t ix, const std::weak_ptr<Schedule> & parent, uint32_t id = 0);
+    Entry(size_t ix, const std::weak_ptr<Schedule> & parent);
 };
 
 /**
@@ -79,40 +85,25 @@ public:
  *
  */
 struct Schedule {
-    std::string name; // Name of this schedule, should be identical to the name 
+    std::vector<std::shared_ptr<Entry>> entriesPtrs; //!< All grouped entries
+    bool ignored; //!< Should all entries in this schedule be ignored during generation
+
+    std::string course; //!< Name of the course this schedule belongs to
+    std::string name; //!< Name of this schedule, should be identical to the name 
     // under which this schedule is stored in course
-    std::vector<std::shared_ptr<Entry>> entriesPtrs; // All grouped entries
-
-    std::weak_ptr<Course> course; // Course this schedule belongs to
-
-    bool ignored; // Should all entries in this schedule be ignored during generation
 
     /**
      * @brief Construct a new Schedule object
      *
-     * @param parent Course this schedule belongs to
      */
-    Schedule(const std::weak_ptr<Course> & parent);
+    Schedule();
 
     /**
      * @brief Construct a new Schedule object
      *
-     * Name should be identical to the name uder which this schedule is stored
-     * in course
-     *
-     * @param parent Course this schedule belongs to
      * @param name Name of this schedule
      */
-    Schedule(const std::weak_ptr<Course> & parent, const std::string & name);
-};
-
-/**
- * @brief Represents course in semester
- *
- */
-struct Course {
-    std::string name; // Name of the course
-    std::map <std::string, std::shared_ptr<Schedule>> schedulesPtrs; // Schedules of this course
+    Schedule(const std::string & name);
 };
 
 /**
@@ -120,7 +111,7 @@ struct Course {
  *
  */
 struct Semester {
-    std::vector <std::shared_ptr<Course>> coursesPtrs; // Courses of semester
+    std::vector <std::shared_ptr<Schedule>> schedulePtrs; // Schedules of courses in semester
 };
 
 #endif /* SUBJECTS_H */
