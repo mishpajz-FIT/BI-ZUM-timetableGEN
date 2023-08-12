@@ -91,7 +91,7 @@ void StdoutOutputter::output(const std::vector<EvolutionResult> & result) {
         }
         std::cout << "\n";
         // Print additional informations
-        std::cout << entry->id << "\n";
+        std::cout << entry->legibleIdentifier << "\n";
         std::cout << entry->additionalInformation << "\n";
         std::cout << std::setw(SEPARATOR_LENGTH) << std::setfill(ENTRY_SEPARATOR);
         std::cout << "\n" << std::endl;

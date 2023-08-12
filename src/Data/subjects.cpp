@@ -30,6 +30,6 @@ void Entry::setBonus(double value) {
     }
 }
 
-Schedule::Schedule() : name(), ignored(false) { }
+Schedule::Schedule() : ignored(false), name() { }
 
-Schedule::Schedule(const std::string & name) : name(name), ignored(false) { }
+Schedule::Schedule(const std::string & name) : ignored(false), name(name) { }
