@@ -109,8 +109,8 @@ size_t Evolution::getGenomeSize() const {
 void Evolution::selection(std::vector<Genome> & newGeneration, size_t generationSize) const {
 
     // Keep track of maximum and minimum of reached scores
-    Scores minValues;
-    Scores maxValues;
+    Scores minValues(priorities);
+    Scores maxValues(priorities);
 
     // Iterate through all genomes
     bool first = true;
@@ -136,7 +136,7 @@ void Evolution::selection(std::vector<Genome> & newGeneration, size_t generation
     using GenomeFitness = std::pair<Genome, double>;
     std::vector<GenomeFitness> fitnessedGenomes;
     for (auto it = scoredGenomes.begin(); it != scoredGenomes.end(); it++) {
-        fitnessedGenomes.emplace_back(std::make_pair(it->first, it->second.convertScoreToFitness(minValues, maxValues, priorities)));
+        fitnessedGenomes.emplace_back(std::make_pair(it->first, it->second.convertScoreToFitness(minValues, maxValues)));
     }
 
     // Sort genomes based on fitness
@@ -159,7 +159,7 @@ void Evolution::selection(std::vector<Genome> & newGeneration, size_t generation
 
 Scores Evolution::score(const Genome & genome) const {
 
-    // Get all intervals and sort them by start time
+    // Get all intervals
     using IntervalEntry = std::pair<TimeInterval, std::shared_ptr<Entry>>;
     std::vector<IntervalEntry> intervals;
 
@@ -170,14 +170,9 @@ Scores Evolution::score(const Genome & genome) const {
         }
     }
 
-    std::sort(intervals.begin(), intervals.end(), [ ] (const IntervalEntry & lhs, const IntervalEntry & rhs) -> bool {
-        return lhs.first < rhs.first;
-        });
-
-
     // Calculate score using sorted intervals
-    Scores result;
-    result.calculateScore(intervals, priorities);
+    Scores result(priorities);
+    result.calculateScore(intervals);
     return result;
 }
 

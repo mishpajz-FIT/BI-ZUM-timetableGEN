@@ -13,8 +13,9 @@
 #define EVOLUTION_H
 
 #include "Data/subjects.h"
+#include "Data/priorities.h"
 #include "Evolution/crossovers.h"
-#include "Evolution/priorities.h"
+#include "Evolution/scores.h"
 
 #include <vector>
 #include <tuple>

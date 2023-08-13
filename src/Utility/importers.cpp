@@ -1,6 +1,6 @@
-#include <utility>
-
 #include "importers.h"
+
+#include <utility>
 
 ImporterException::ImporterException(std::string message) : msg(std::move(message)) { }
 
