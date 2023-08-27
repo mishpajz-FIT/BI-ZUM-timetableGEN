@@ -24,4 +24,4 @@ jobs:
         with:
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ vars.DOCKERHUB_TAG }}
+          tags: ${{ vars.DOCKERHUB_TAG }}latest , ${{ vars.DOCKERHUB_TAG }}${{ github.sha }} 
