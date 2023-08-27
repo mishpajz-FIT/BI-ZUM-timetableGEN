@@ -24,6 +24,7 @@
 #include <memory>
 #include <algorithm>
 #include <iostream>
+#include <functional>
 
 /**
  * @brief Course and Schedule name
